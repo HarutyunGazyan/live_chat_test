@@ -1,0 +1,11 @@
+{
+  "Version": 1,
+  "Hash": "zOHgVzCLceFvqAbcdOyCOX6BGDfaAd3SglXUFjzZhC0=",
+  "Source": "SessionCoordinatorService",
+  "BasePath": "_content/SessionCoordinatorService",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": []
+}

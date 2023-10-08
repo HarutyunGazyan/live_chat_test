@@ -1,0 +1,4 @@
+C:\Users\Leopard\Desktop\code\live_chat_test\RabbitMQ.Lib\RabbitMQ.Lib\obj\Debug\net7.0\RabbitMQ.Lib.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Leopard\Desktop\code\live_chat_test\RabbitMQ.Lib\RabbitMQ.Lib\obj\Debug\net7.0\RabbitMQ.Lib.AssemblyInfoInputs.cache
+C:\Users\Leopard\Desktop\code\live_chat_test\RabbitMQ.Lib\RabbitMQ.Lib\obj\Debug\net7.0\RabbitMQ.Lib.AssemblyInfo.cs
+C:\Users\Leopard\Desktop\code\live_chat_test\RabbitMQ.Lib\RabbitMQ.Lib\obj\Debug\net7.0\RabbitMQ.Lib.csproj.CoreCompileInputs.cache
