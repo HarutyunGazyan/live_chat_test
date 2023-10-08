@@ -1,6 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Hosting;
-using Pipelines.Sockets.Unofficial.Arenas;
 
 namespace SessionCoordinatorService.Entities
 {
@@ -34,8 +32,9 @@ namespace SessionCoordinatorService.Entities
                 .HasForeignKey(x => x.AgentId);
 
 
-            modelBuilder.Entity<AgentSeniority>().HasData(_agentSeniorities);
-            modelBuilder.Entity<Team>().HasData(_teams);
+            modelBuilder.Entity<AgentSeniority>().HasData(_agentSenioritiesSeed);
+            modelBuilder.Entity<Team>().HasData(_teamsSeed);
+            modelBuilder.Entity<Agent>().HasData(_agentsSeed);
 
 
         }
@@ -45,7 +44,12 @@ namespace SessionCoordinatorService.Entities
         static Guid seniorSeniorityId = Guid.NewGuid();
         static Guid leadSeniorityId = Guid.NewGuid();
 
-        private List<AgentSeniority> _agentSeniorities = new List<AgentSeniority>
+        static Guid teamA = Guid.NewGuid();
+        static Guid teamB = Guid.NewGuid();
+        static Guid teamC = Guid.NewGuid();
+        static Guid teamOverflow = Guid.NewGuid();
+
+        private List<AgentSeniority> _agentSenioritiesSeed = new List<AgentSeniority>
         {
             new AgentSeniority
             {
@@ -72,128 +76,151 @@ namespace SessionCoordinatorService.Entities
                 SeniorityMultiplier = 5
             }
         };
-        private List<Team> _teams = new List<Team>
+        private List<Team> _teamsSeed = new List<Team>
         {
             new Team
             {
-                Id = Guid.NewGuid(),
+                Id = teamA,
                 Name = "A",
-                WorkStartAt = new TimeOnly(10,0,0),
-                WorkFinishAt = new TimeOnly(18,0,0),
-                Agents = new List<Agent>
-                {
-                    new Agent
-                    {
-                        Name = "Team_A_Team_Lead",
-                        SeniorityId = leadSeniorityId,
-                    },
-                    new Agent
-                    {
-                        Name = "Team_A_Mid_1",
-                        SeniorityId = midSeniorityId,
-                    },
-                    new Agent
-                    {
-                        Name = "Team_A_Mid_2",
-                        SeniorityId = midSeniorityId,
-                    },
-                    new Agent
-                    {
-                        Name = "Team_A_Junior",
-                        SeniorityId = juniorSeniorityId,
-                    }
-                }
+                WorkStartHourAt = 10,
+                WorkFinishHourAt = 18,
             },
             new Team
             {
-                Id = Guid.NewGuid(),
+                Id = teamB,
                 Name = "B",
-                WorkStartAt = new TimeOnly(18,0,0),
-                WorkFinishAt = new TimeOnly(2,0,0),
-                Agents = new List<Agent>
-                {
-                    new Agent
-                    {
-                        Name = "Team_B_Senior",
-                        SeniorityId = seniorSeniorityId,
-                    },
-                    new Agent
-                    {
-                        Name = "Team_B_Mid",
-                        SeniorityId = midSeniorityId,
-                    },
-                    new Agent
-                    {
-                        Name = "Team_B_Junior_1",
-                        SeniorityId = juniorSeniorityId,
-                    },
-                    new Agent
-                    {
-                        Name = "Team_B_Junior_2",
-                        SeniorityId = juniorSeniorityId,
-                    }
-                }
+                WorkStartHourAt = 18,
+                WorkFinishHourAt = 2
             },
             new Team
             {
-                Id = Guid.NewGuid(),
+                Id = teamC,
                 Name = "C",
-                WorkStartAt = new TimeOnly(2,0,0),
-                WorkFinishAt = new TimeOnly(10,0,0),
-                Agents = new List<Agent>
-                {
-                    new Agent
-                    {
-                        Name = "Team_C_Mid_1",
-                        SeniorityId = midSeniorityId,
-                    },
-                    new Agent
-                    {
-                        Name = "Team_C_Mid_2",
-                        SeniorityId = midSeniorityId,
-                    }
-                }
+                WorkStartHourAt = 2,
+                WorkFinishHourAt = 10,
             },
             new Team
             {
-                Id = Guid.NewGuid(),
+                Id = teamOverflow,
                 Name = "Overflow",
-                WorkStartAt = new TimeOnly(10,0,0),
-                WorkFinishAt = new TimeOnly(18,0,0),
-                Agents = new List<Agent>
-                {
-                    new Agent
-                    {
-                        Name = "Team_Overflow_Junior_1",
-                        SeniorityId = juniorSeniorityId,
-                    },
-                    new Agent
-                    {
-                        Name = "Team_Overflow_Junior_2",
-                        SeniorityId = juniorSeniorityId,
-                    },
-                    new Agent
-                    {
-                        Name = "Team_Overflow_Junior_3",
-                        SeniorityId = juniorSeniorityId,
-                    },
-                    new Agent
-                    {
-                        Name = "Team_Overflow_Junior_4",
-                        SeniorityId = juniorSeniorityId,
-                    },
-                    new Agent
-                    {
-                        Name = "Team_Overflow_Junior_5",
-                        SeniorityId = juniorSeniorityId,
-                    },
-                    new Agent
-                    {
-                        Name = "Team_Overflow_Junior_6",
-                        SeniorityId = juniorSeniorityId,
-                    }
-                }
+                WorkStartHourAt = 10,
+                WorkFinishHourAt = 18
             },
+        };
+        public List<Agent> _agentsSeed = new List<Agent>
+        {
+            new Agent
+            {
+                Id = Guid.NewGuid(),
+                TeamId = teamA,
+                Name = "Team_A_Team_Lead",
+                SeniorityId = leadSeniorityId,
+            },
+            new Agent
+            {
+                Id = Guid.NewGuid(),
+                TeamId = teamA,
+                Name = "Team_A_Mid_1",
+                SeniorityId = midSeniorityId,
+            },
+            new Agent
+            {
+                Id = Guid.NewGuid(),
+                TeamId = teamA,
+                Name = "Team_A_Mid_2",
+                SeniorityId = midSeniorityId,
+            },
+            new Agent
+            {
+                Id = Guid.NewGuid(),
+                TeamId = teamA,
+                Name = "Team_A_Junior",
+                SeniorityId = juniorSeniorityId,
+            },
+            new Agent
+            {
+                Id = Guid.NewGuid(),
+                TeamId = teamB,
+                Name = "Team_B_Senior",
+                SeniorityId = seniorSeniorityId,
+            },
+            new Agent
+            {
+                Id = Guid.NewGuid(),
+                TeamId = teamB,
+                Name = "Team_B_Mid",
+                SeniorityId = midSeniorityId,
+            },
+            new Agent
+            {
+                Id = Guid.NewGuid(),
+                TeamId = teamB,
+                Name = "Team_B_Junior_1",
+                SeniorityId = juniorSeniorityId,
+            },
+            new Agent
+            {
+                Id = Guid.NewGuid(),
+                TeamId = teamB,
+                Name = "Team_B_Junior_2",
+                SeniorityId = juniorSeniorityId,
+            },
+            new Agent
+            {
+                Id = Guid.NewGuid(),
+                TeamId = teamC,
+                Name = "Team_C_Mid_1",
+                SeniorityId = midSeniorityId,
+            },
+            new Agent
+            {
+                Id = Guid.NewGuid(),
+                TeamId = teamC,
+                Name = "Team_C_Mid_2",
+                SeniorityId = midSeniorityId,
+            },
+            new Agent
+            {
+                Id = Guid.NewGuid(),
+                TeamId = teamOverflow,
+                Name = "Team_Overflow_Junior_1",
+                SeniorityId = juniorSeniorityId,
+            },
+            new Agent
+            {
+                Id = Guid.NewGuid(),
+                TeamId = teamOverflow,
+                Name = "Team_Overflow_Junior_2",
+                SeniorityId = juniorSeniorityId,
+            },
+            new Agent
+            {
+                Id = Guid.NewGuid(),
+                TeamId = teamOverflow,
+                Name = "Team_Overflow_Junior_3",
+                SeniorityId = juniorSeniorityId,
+            },
+            new Agent
+            {
+                Id = Guid.NewGuid(),
+                TeamId = teamOverflow,
+                Name = "Team_Overflow_Junior_4",
+                SeniorityId = juniorSeniorityId,
+            },
+            new Agent
+            {
+                Id = Guid.NewGuid(),
+                TeamId = teamOverflow,
+                Name = "Team_Overflow_Junior_5",
+                SeniorityId = juniorSeniorityId,
+            },
+            new Agent
+            {
+                Id = Guid.NewGuid(),
+                TeamId = teamOverflow,
+                Name = "Team_Overflow_Junior_6",
+                SeniorityId = juniorSeniorityId,
+            }
         };
     }
 }

@@ -2,26 +2,19 @@ using Microsoft.EntityFrameworkCore;
 using SessionCoordinatorService.Entities;
 
 var builder = WebApplication.CreateBuilder(args);
-var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
-// Add services to the container.
+var configuration = builder.Configuration
+ .SetBasePath(System.IO.Directory.GetCurrentDirectory())
+ .AddJsonFile($"appsettings.json", optional: false)
+ .AddEnvironmentVariables()
+ .Build();
+
 builder.Services.AddControllersWithViews();
 
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy(name: MyAllowSpecificOrigins,
-                      builder =>
-                      {
-                          builder
-                          .AllowAnyOrigin()
-                          .AllowAnyMethod()
-                          .AllowAnyHeader()
-                          .AllowCredentials();
-                      });
-}); 
+var connectionString = configuration.GetSection("DatabaseUrl");
 
 builder.Services.AddDbContext<SupportDbContext>(options =>
 {
-    options.UseSqlServer("Server=RAVI;Database=EFCoreCodeFirstDB;Trusted_Connection=True;MultipleActiveResultSets=true;TrustServerCertificate=True;");
+    options.UseSqlServer(connectionString.Value);
 });
 var app = builder.Build();
 
@@ -45,5 +38,3 @@ app.MapControllerRoute(
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
 app.Run();
-
-app.UseCors(MyAllowSpecificOrigins);
