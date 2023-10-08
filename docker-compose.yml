@@ -1,0 +1,43 @@
+# vi docker-compose.yml
+version: '3.3'
+services:
+    mongo:
+        ports:
+            - '27017:27017'
+        container_name: dkrcomp-mongo
+        restart: always
+        logging:
+            options:
+                max-size: 1g
+        environment:
+            - MONGO_INITDB_ROOT_USERNAME=
+            - MONGO_INITDB_ROOT_PASSWORD=
+        image: mongo
+        networks:
+            vpcbr:
+                ipv4_address: 10.5.0.5
+        volumes:
+      # Sample data comes from:
+      # https://github.com/mistertandon/node-express-hbs/blob/master/movies_collection.json
+            - ./mongo:/docker-entrypoint-initdb.d    
+    
+    
+    rabbitmq:
+        image: rabbitmq:3-management-alpine
+        container_name: 'rabbitmq'
+        ports:
+            - 5672:5672
+            - 15672:15672
+        volumes:
+            - ~/.docker-conf/rabbitmq/data/:/var/lib/rabbitmq/
+            - ~/.docker-conf/rabbitmq/log/:/var/log/rabbitmq
+        networks:
+            - vpcbr
+
+networks:
+  vpcbr:
+    driver: bridge
+    ipam:
+     config:
+       - subnet: 10.5.0.0/16
+         gateway: 10.5.0.1
