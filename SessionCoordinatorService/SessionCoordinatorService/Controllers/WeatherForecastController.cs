@@ -25,6 +25,7 @@ namespace SessionCoordinatorService.Controllers
         [HttpGet(Name = "GetWeatherForecast")]
         public async Task<IActionResult> Get()
         {
+            var x = await _dbContext.Teams.Include(x=>x.Agents).ThenInclude(x => x.Seniority).FirstAsync();
             return Ok(Enumerable.Range(1, 5).Select(index => new WeatherForecast
             {
                 Date = DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
