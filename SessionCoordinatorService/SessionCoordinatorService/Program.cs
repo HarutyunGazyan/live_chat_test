@@ -15,6 +15,7 @@ builder.Services.AddDbContext<SupportDbContext>(options =>
     options.UseSqlServer(configuration.GetSection("DatabaseUrl").Value);
 });
 
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

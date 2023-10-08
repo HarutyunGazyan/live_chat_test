@@ -55,25 +55,29 @@ namespace SessionCoordinatorService.Entities
             {
                 Id = juniorSeniorityId,
                 Name = "Junior",
-                SeniorityMultiplier = 4
+                SeniorityMultiplier = 4,
+                Priority = 1
             },
             new AgentSeniority
             {
                 Id = midSeniorityId,
                 Name = "Mid-Level",
-                SeniorityMultiplier = 6
+                SeniorityMultiplier = 6,
+                Priority = 2
             },
             new AgentSeniority
             {
                 Id = seniorSeniorityId,
                 Name = "Senior",
-                SeniorityMultiplier = 8
+                SeniorityMultiplier = 8,
+                Priority = 3
             },
             new AgentSeniority
             {
                 Id =leadSeniorityId,
                 Name = "Team Lead",
-                SeniorityMultiplier = 5
+                SeniorityMultiplier = 5,
+                Priority = 4
             }
         };
         private List<Team> _teamsSeed = new List<Team>
@@ -84,13 +88,15 @@ namespace SessionCoordinatorService.Entities
                 Name = "A",
                 WorkStartHourAt = 10,
                 WorkFinishHourAt = 18,
+                Active = true
             },
             new Team
             {
                 Id = teamB,
                 Name = "B",
                 WorkStartHourAt = 18,
-                WorkFinishHourAt = 2
+                WorkFinishHourAt = 2,
+                Active = true
             },
             new Team
             {
@@ -98,13 +104,15 @@ namespace SessionCoordinatorService.Entities
                 Name = "C",
                 WorkStartHourAt = 2,
                 WorkFinishHourAt = 10,
+                Active = true
             },
             new Team
             {
                 Id = teamOverflow,
                 Name = "Overflow",
                 WorkStartHourAt = 10,
-                WorkFinishHourAt = 18
+                WorkFinishHourAt = 18,
+                Active = false
             },
         };
         public List<Agent> _agentsSeed = new List<Agent>

@@ -7,5 +7,7 @@
         public int WorkStartHourAt { get; set; }
         public int WorkFinishHourAt { get; set; }
         public List<Agent> Agents { get; set; }
+        public bool Active { get; set; }
+
     }
 }
