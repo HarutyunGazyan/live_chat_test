@@ -10,11 +10,9 @@ var configuration = builder.Configuration
 
 builder.Services.AddControllersWithViews();
 
-var connectionString = configuration.GetSection("DatabaseUrl");
-
 builder.Services.AddDbContext<SupportDbContext>(options =>
 {
-    options.UseSqlServer(connectionString.Value);
+    options.UseSqlServer(configuration.GetSection("DatabaseUrl").Value);
 });
 var app = builder.Build();
 
