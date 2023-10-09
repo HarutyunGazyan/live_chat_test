@@ -7,12 +7,12 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddQuartz(q =>
 {
     q.UseMicrosoftDependencyInjectionJobFactory();
-    var jobKey = new JobKey("DemoJob");
+    var jobKey = new JobKey("Monitor");
     q.AddJob<MonitorSessions>(opts => opts.WithIdentity(jobKey));
 
     q.AddTrigger(opts => opts
         .ForJob(jobKey)
-        .WithIdentity("DemoJob-trigger")
+        .WithIdentity("Monitor-trigger")
         .WithCronSchedule("* * * * * ?"));
 
 });

@@ -15,17 +15,22 @@ namespace SessionCoordinatorService.Repositories
             throw new NotImplementedException();
         }
 
+        public Task DeleteActiveAgentSession(ActiveAgentSession session)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<ActiveAgentSession> GetActiveAgentSession(Guid sessionId)
+        {
+            throw new NotImplementedException();
+        }
+
         public Task<Team> GetActiveTeam()
         {
             throw new NotImplementedException();
         }
 
         public Task<List<Agent>> GetAgentsWithCapacity()
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<bool> GetOverflowInfo()
         {
             throw new NotImplementedException();
         }
@@ -51,6 +56,11 @@ namespace SessionCoordinatorService.Repositories
         }
 
         public Task UpdateAsync(Team overflowTeam)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task UpdateOverflowTeam(Team overflowTeam)
         {
             throw new NotImplementedException();
         }

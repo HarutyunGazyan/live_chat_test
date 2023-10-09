@@ -1,9 +1,11 @@
 using Microsoft.EntityFrameworkCore;
+using Quartz;
 using RabbitMQ.Lib.EventBus.Abstractions;
 using RabbitMQ.Lib.EventBus.Events;
 using RabbitMQ.Lib.EventBus.RabbitMQ.Extensions;
 using SessionCoordinatorService.Entities;
 using SessionCoordinatorService.Handlers;
+using SessionCoordinatorService.Options;
 using SessionCoordinatorService.Repositories;
 using SessionCoordinatorService.Services;
 
@@ -34,6 +36,36 @@ builder.Services.AddTransient<IIntegrationEventHandler<SessionCancelledEvent>, S
 builder.Services.AddTransient<ISupportRepository, SupportRepository>();
 builder.Services.AddTransient<ITranasctionProviderRepository, TranasctionProviderRepository>();
 builder.Services.AddTransient<SessionManagementService>();
+builder.Services.AddTransient<ResetOverflowHandler>();
+
+builder.Services.Configure<SessionCoordinatorOptions>(
+    builder.Configuration.GetSection("SessionCoordinatorOptions"));
+
+builder.Services.Configure<MessageBusOptions>(
+    builder.Configuration.GetSection("MessageBusOptions"));
+
+builder.Services.AddQuartz(q =>
+{
+    q.UseMicrosoftDependencyInjectionJobFactory();
+
+    var jobKey = new JobKey("ResetOverflow");
+    q.AddJob<ResetOverflowHandler>(opts => opts.WithIdentity(jobKey));
+
+    q.AddTrigger(opts => opts
+        .ForJob(jobKey)
+        .WithIdentity("ResetOverflow-trigger")
+        .WithDailyTimeIntervalSchedule
+         (s =>
+            s.WithIntervalInHours(24)
+           .OnEveryDay()
+           .StartingDailyAt(TimeOfDay.HourAndMinuteOfDay(
+               configuration.GetSection("SessionCoordinatorOptions").GetSection("OfficeHourEnd").Get<int>(),
+               00
+            ))
+         ));
+
+});
+builder.Services.AddQuartzHostedService(q => q.WaitForJobsToComplete = true);
 
 var app = builder.Build();
 

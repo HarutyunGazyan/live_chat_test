@@ -1,23 +1,49 @@
-﻿using RabbitMQ.Lib.EventBus.Abstractions;
+﻿using Microsoft.Extensions.Options;
+using RabbitMQ.Lib.EventBus.Abstractions;
 using RabbitMQ.Lib.EventBus.Events;
 using SessionCoordinatorService.Entities;
+using SessionCoordinatorService.Options;
 using SessionCoordinatorService.Services.DTOs;
 
 namespace SessionCoordinatorService.Services
 {
     public class SessionManagementService
     {
+        private readonly SessionCoordinatorOptions _options;
         private readonly ILogger<SessionManagementService> _logger;
         private readonly ISupportRepository _supportRepository;
         private readonly IEventBus _eventBus;
         private readonly ITranasctionProviderRepository _tranasctionProviderRepository;
 
-        public SessionManagementService(ILogger<SessionManagementService> logger, ISupportRepository supportRepository, IEventBus eventBus, ITranasctionProviderRepository tranasctionProviderRepository)
+        public SessionManagementService(IOptions<SessionCoordinatorOptions> options, ILogger<SessionManagementService> logger, ISupportRepository supportRepository, IEventBus eventBus, ITranasctionProviderRepository tranasctionProviderRepository)
         {
+            _options = options.Value;
             _logger = logger;
             _supportRepository = supportRepository;
             _eventBus = eventBus;
             _tranasctionProviderRepository = tranasctionProviderRepository;
+        }
+
+        public async Task<bool> RemoveSession(Guid sessionId)
+        {
+            var session = await _supportRepository.GetActiveAgentSession(sessionId);
+            if (session == null)
+            {
+                return true;
+            }
+
+            await _supportRepository.DeleteActiveAgentSession(session);
+            return true;
+        }
+
+        public async Task DeactivateOverflowTeam()
+        {
+            var overflowTeam = await _supportRepository.GetOverflowTeam();
+            if (overflowTeam.Active)
+            {
+                overflowTeam.Active = false;
+                await _supportRepository.UpdateOverflowTeam(overflowTeam);
+            }
         }
 
         public async Task<bool> AppendToAgent()
@@ -142,7 +168,7 @@ namespace SessionCoordinatorService.Services
 
             var timeHour = DateTime.Now.Hour;
 
-            if (timeHour > 10 && timeHour < 18)
+            if (timeHour > _options.OfficeHourStart && timeHour < _options.OfficeHourEnd)
             {
                 result.OverflowTeam = await _supportRepository.GetOverflowTeam();
                 result.IsAvailable = true;
