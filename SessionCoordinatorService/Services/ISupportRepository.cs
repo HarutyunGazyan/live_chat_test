@@ -15,5 +15,6 @@ namespace SessionCoordinatorService.Services
         Task<int> GetSessionQueueCount();
         Task RemoveFromSessionQueue(SessionQueueItem sessionToRemove);
         Task UpdateTeamAsync(Team team);
+        Task<SessionQueueItem> GetSessionById(Guid sessionId);
     }
 }

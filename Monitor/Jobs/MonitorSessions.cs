@@ -1,30 +1,37 @@
-﻿using MongoDB.Driver;
+﻿using Microsoft.EntityFrameworkCore;
+using MongoDB.Driver;
 using Quartz;
-using Shared.Library.EventBus.Abstractions;
-using Shared.Library.EventBus.Events;
+using Shared.Library.Entities;
 
 namespace Monitor.Jobs
 {
     public class MonitorSessions : IJob
     {
-        private readonly SessionService _sessionService;
-        private readonly IEventBus _eventBus;
+        private readonly ConnectionService _sessionService;
+        private readonly SupportDbContext _supportDbContext;
 
-        public MonitorSessions(SessionService sessionService, IEventBus eventBus)
+        public MonitorSessions(ConnectionService sessionService, SupportDbContext supportDbContext)
         {
             _sessionService = sessionService;
-            _eventBus = eventBus;
+            _supportDbContext = supportDbContext;
         }
         public async Task Execute(IJobExecutionContext context)
         {
-            var sessionsToCancell = await _sessionService.sessionCollection.Find(x => x.ExpireAt < DateTime.UtcNow).ToListAsync();
+            var activeConnections = await _sessionService.sessionCollection.Find(x => x.ExpireAt > DateTime.UtcNow).ToListAsync();
 
-            foreach (var session in sessionsToCancell)
+            var sessionsToDetele = await _supportDbContext.SessionQueue.Where(x => !activeConnections.Select(y => y.Id).Contains(x.Id)).ToListAsync();
+            if(sessionsToDetele.Any())
             {
-                _eventBus.Publish(new SessionCancelledEvent { SessionId = session.Id });
+                _supportDbContext.SessionQueue.RemoveRange(sessionsToDetele);
             }
 
-            await _sessionService.sessionCollection.DeleteManyAsync(x => sessionsToCancell.Select(x => x.Id).Contains(x.Id));
+            var agentSessionsToDelete = await _supportDbContext.ActiveAgentSessions.Where(x => !activeConnections.Select(y => y.Id).Contains(x.SessionId)).ToListAsync();
+            if (agentSessionsToDelete.Any())
+            {
+                _supportDbContext.ActiveAgentSessions.RemoveRange(agentSessionsToDelete);
+            }
+
+            await _supportDbContext.SaveChangesAsync();
         }
     }
 }

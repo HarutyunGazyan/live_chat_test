@@ -37,7 +37,7 @@ namespace SessionCoordinatorService.Repositories
 
         public async Task<ActiveAgentSession> GetActiveAgentSession(Guid sessionId)
         {
-            return await _dbContext.ActiveAgentSessions.SingleOrDefaultAsync(x => x.Id == sessionId);
+            return await _dbContext.ActiveAgentSessions.SingleOrDefaultAsync(x => x.SessionId == sessionId);
         }
 
         public async Task<List<Team>> GetActiveTeams()
@@ -105,6 +105,11 @@ namespace SessionCoordinatorService.Repositories
         {
             _dbContext.Teams.Update(team);
             await _dbContext.SaveChangesAsync();
+        }
+
+        public async Task<SessionQueueItem> GetSessionById(Guid sessionId)
+        {
+            return await _dbContext.SessionQueue.FirstOrDefaultAsync(x => x.Id == sessionId);
         }
     }
 }

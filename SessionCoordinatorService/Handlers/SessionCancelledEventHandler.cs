@@ -15,7 +15,7 @@ namespace SessionCoordinatorService.Handlers
 
         public async Task<bool> Handle(SessionCancelledEvent @event)
         {
-            return await _sessionManagementService.AppendToAgent();
+            return await _sessionManagementService.RemoveSession(@event.SessionId);
 
         }
     }

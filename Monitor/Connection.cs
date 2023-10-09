@@ -1,6 +1,6 @@
 ﻿namespace Monitor
 {
-    public class Session
+    public class Connection
     {
         public Guid Id { get; set; }
         public DateTime ExpireAt { get; set; }

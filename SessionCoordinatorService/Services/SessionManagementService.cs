@@ -23,14 +23,26 @@ namespace SessionCoordinatorService.Services
 
         public async Task<bool> RemoveSession(Guid sessionId)
         {
-            var session = await _supportRepository.GetActiveAgentSession(sessionId);
-            if (session == null)
+            try
             {
+                var agentSession = await _supportRepository.GetActiveAgentSession(sessionId);
+                if (agentSession != null)
+                {
+                    await _supportRepository.DeleteActiveAgentSession(agentSession);
+                }
+
+                var session = await _supportRepository.GetSessionById(sessionId);
+                if (session != null)
+                {
+                    await _supportRepository.RemoveFromSessionQueue(session);
+                }
                 return true;
             }
-
-            await _supportRepository.DeleteActiveAgentSession(session);
-            return true;
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, ex);
+                return false;
+            }
         }
 
         public async Task DeactivateOverflowTeam()//called 1 per day via quatrz
