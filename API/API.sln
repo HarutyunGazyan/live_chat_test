@@ -3,7 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.7.34031.279
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "API", "API\API.csproj", "{5E8AFB29-A379-4D59-A668-753657356D7E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "API", "API\API.csproj", "{5E8AFB29-A379-4D59-A668-753657356D7E}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Shared.Lib", "..\RabbitMQ.Lib\RabbitMQ.Lib\Shared.Lib.csproj", "{0ACD819F-83C4-4096-9A72-7B4B9B2F663A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{5E8AFB29-A379-4D59-A668-753657356D7E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5E8AFB29-A379-4D59-A668-753657356D7E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5E8AFB29-A379-4D59-A668-753657356D7E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0ACD819F-83C4-4096-9A72-7B4B9B2F663A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0ACD819F-83C4-4096-9A72-7B4B9B2F663A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0ACD819F-83C4-4096-9A72-7B4B9B2F663A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0ACD819F-83C4-4096-9A72-7B4B9B2F663A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
