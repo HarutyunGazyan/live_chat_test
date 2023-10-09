@@ -4,6 +4,8 @@ using RabbitMQ.Lib.EventBus.Events;
 using RabbitMQ.Lib.EventBus.RabbitMQ.Extensions;
 using SessionCoordinatorService.Entities;
 using SessionCoordinatorService.Handlers;
+using SessionCoordinatorService.Repositories;
+using SessionCoordinatorService.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration
@@ -27,7 +29,10 @@ builder.Services.AddEventBus(
     }
 );
 
-builder.Services.AddTransient<IIntegrationEventHandler<AppendSessionToAgentEvent>, AppendSessionToAgentEventHandler>();
+builder.Services.AddTransient<IIntegrationEventHandler<MonitorSessionQueueEvent>, AppendSessionToAgentEventHandler>();
+builder.Services.AddTransient<IIntegrationEventHandler<SessionCancelledEvent>, SessionCancelledEventHandler>();
+builder.Services.AddTransient<ISupportRepository, SessionRepository>(); 
+builder.Services.AddTransient<SessionManagementService>();
 
 var app = builder.Build();
 
@@ -56,8 +61,9 @@ try
 {
     app.UseEventBus(eventBus =>
     {
-        eventBus.Subscribe<AppendSessionToAgentEvent, IIntegrationEventHandler<AppendSessionToAgentEvent>>();
-        eventBus.Publish(new AppendSessionToAgentEvent());
+        eventBus.Subscribe<MonitorSessionQueueEvent, IIntegrationEventHandler<MonitorSessionQueueEvent>>();
+        eventBus.Subscribe<SessionCancelledEvent, IIntegrationEventHandler<SessionCancelledEvent>>();
+        eventBus.Publish(new MonitorSessionQueueEvent());
     });
 }
 catch (Exception ex)

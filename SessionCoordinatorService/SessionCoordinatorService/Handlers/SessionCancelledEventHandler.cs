@@ -4,18 +4,19 @@ using SessionCoordinatorService.Services;
 
 namespace SessionCoordinatorService.Handlers
 {
-    public class AppendSessionToAgentEventHandler : IIntegrationEventHandler<MonitorSessionQueueEvent>
+    public class SessionCancelledEventHandler : IIntegrationEventHandler<SessionCancelledEvent>
     {
         private readonly SessionManagementService _sessionManagementService;
 
-        public AppendSessionToAgentEventHandler(SessionManagementService sessionManagementService)
+        public SessionCancelledEventHandler(SessionManagementService sessionManagementService)
         {
             _sessionManagementService = sessionManagementService;
         }
 
-        public async Task<bool> Handle(MonitorSessionQueueEvent @event)
+        public async Task<bool> Handle(SessionCancelledEvent @event)
         {
             return await _sessionManagementService.AppendToAgent(@event.SessionId);
+
         }
     }
 }

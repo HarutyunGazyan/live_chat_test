@@ -1,6 +1,6 @@
 ﻿namespace RabbitMQ.Lib.EventBus.Events
 {
-    public class AppendSessionToAgentEvent : IntegrationEvent
+    public class MonitorSessionQueueEvent : IntegrationEvent
     {
         public Guid SessionId { get; set; }
     }

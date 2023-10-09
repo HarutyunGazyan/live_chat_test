@@ -13,7 +13,7 @@ namespace SessionCoordinatorService.Entities
         public DbSet<AgentSeniority> Seniority { get; set; }
         public DbSet<ActiveAgentSession> ActiveAgentSessions { get; set; }
         public DbSet<SessionMessage> SessionChats { get; set; }
-
+        public DbSet<SessionQueueItem> SessionQueue { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Team>()
@@ -31,6 +31,7 @@ namespace SessionCoordinatorService.Entities
                 .WithOne(x => x.Agent)
                 .HasForeignKey(x => x.AgentId);
 
+            modelBuilder.Entity<ActiveAgentSession>(x => x.HasIndex(y => y.SessionId).IsUnique());
 
             modelBuilder.Entity<AgentSeniority>().HasData(_agentSenioritiesSeed);
             modelBuilder.Entity<Team>().HasData(_teamsSeed);

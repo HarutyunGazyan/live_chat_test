@@ -26,18 +26,6 @@ namespace SessionCoordinatorService.Controllers
         [HttpPost(nameof(Create))]
         public async Task<IActionResult> Create()
         {
-            //1) find out current active teams
-            //2) calculate team capacity, max queue length
-            //3) check current queue length,
-            //if >= capacity*1.5{
-            //if overflow availabe and not active{
-            //activate overflow,
-            //recaulculate queue length,
-            // add to queue
-            //}
-            //else reject
-            //}else
-            //{
             //add to queue a message called - monitor_queue
             //(session_queue) should have a subscriber which will:
             //open a TNX
