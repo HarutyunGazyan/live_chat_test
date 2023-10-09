@@ -4,8 +4,14 @@ namespace RabbitMQ.Lib.EventBus.Abstractions
 {
     public interface IEventBus
     {
-        void Subscribe<T>(IIntegrationEventHandler<T> handler) where T: IntegrationEvent;
-        void Unsubscribe<T>(IIntegrationEventHandler<T> handler) where T : IntegrationEvent;
         void Publish(IntegrationEvent @event);
+
+        void Subscribe<T, TH>()
+            where T : IntegrationEvent
+            where TH : IIntegrationEventHandler<T>;
+
+        void Unsubscribe<T, TH>()
+            where T : IntegrationEvent
+            where TH : IIntegrationEventHandler<T>;        
     }
 }

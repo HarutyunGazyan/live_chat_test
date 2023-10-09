@@ -2,10 +2,10 @@
 
 namespace RabbitMQ.Lib.EventBus.Abstractions
 {
-    public interface IIntegrationEventHandler<in TIntegrationEvent> : IIntegrationEventHandler 
-        where TIntegrationEvent: IntegrationEvent
+    public interface IIntegrationEventHandler<in TIntegrationEvent> : IIntegrationEventHandler
+        where TIntegrationEvent : IntegrationEvent
     {
-        Task Handle(TIntegrationEvent @event);
+        Task<bool> Handle(TIntegrationEvent @event);
     }
 
     public interface IIntegrationEventHandler

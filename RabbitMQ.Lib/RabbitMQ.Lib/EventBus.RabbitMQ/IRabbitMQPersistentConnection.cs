@@ -1,10 +1,8 @@
 ﻿using RabbitMQ.Client;
 
-namespace RabbitMQ.Lib.EventBusRabbitMQ
+namespace RabbitMQ.Lib.EventBus.RabbitMQ
 {
-
-    public interface IRabbitMQPersistentConnection
-        : IDisposable
+    public interface IRabbitMQPersistentConnection:IDisposable
     {
         bool IsConnected { get; }
 

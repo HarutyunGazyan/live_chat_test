@@ -24,4 +24,8 @@
     <ProjectReference Include="..\..\RabbitMQ.Lib\RabbitMQ.Lib\RabbitMQ.Lib.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Repositories\" />
+  </ItemGroup>
+
 </Project>

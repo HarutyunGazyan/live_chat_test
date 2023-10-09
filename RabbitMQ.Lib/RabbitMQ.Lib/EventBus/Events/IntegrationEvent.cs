@@ -5,10 +5,17 @@
         public IntegrationEvent()
         {
             Id = Guid.NewGuid();
-            CreationDate = DateTime.UtcNow;
+            CreationDate = DateTime.Now;
         }
 
-        public Guid Id  { get; }
-        public DateTime CreationDate { get; }
+        public IntegrationEvent(Guid id,DateTime createDate)
+        {
+            Id = id;
+            CreationDate = createDate;
+        }
+
+        public Guid Id { get; private set; }
+
+        public DateTime CreationDate { get; private set; }
     }
 }
