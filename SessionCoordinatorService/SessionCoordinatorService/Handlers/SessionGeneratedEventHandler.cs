@@ -4,16 +4,16 @@ using SessionCoordinatorService.Services;
 
 namespace SessionCoordinatorService.Handlers
 {
-    public class AppendSessionToAgentEventHandler : IIntegrationEventHandler<MonitorSessionQueueEvent>
+    public class SessionGeneratedEventHandler : IIntegrationEventHandler<SessionGeneratedEvent>
     {
         private readonly SessionManagementService _sessionManagementService;
 
-        public AppendSessionToAgentEventHandler(SessionManagementService sessionManagementService)
+        public SessionGeneratedEventHandler(SessionManagementService sessionManagementService)
         {
             _sessionManagementService = sessionManagementService;
         }
 
-        public async Task<bool> Handle(MonitorSessionQueueEvent @event)
+        public async Task<bool> Handle(SessionGeneratedEvent @event)
         {
             return await _sessionManagementService.AppendToAgent();
         }

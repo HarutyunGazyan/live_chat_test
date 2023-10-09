@@ -31,15 +31,12 @@ builder.Services.AddEventBus(
     }
 );
 
-builder.Services.AddTransient<IIntegrationEventHandler<MonitorSessionQueueEvent>, AppendSessionToAgentEventHandler>();
+builder.Services.AddTransient<IIntegrationEventHandler<SessionGeneratedEvent>, SessionGeneratedEventHandler>();
 builder.Services.AddTransient<IIntegrationEventHandler<SessionCancelledEvent>, SessionCancelledEventHandler>();
 builder.Services.AddTransient<ISupportRepository, SupportRepository>();
 builder.Services.AddTransient<ITranasctionProviderRepository, TranasctionProviderRepository>();
 builder.Services.AddTransient<SessionManagementService>();
 builder.Services.AddTransient<ResetOverflowHandler>();
-
-builder.Services.Configure<SessionCoordinatorOptions>(
-    builder.Configuration.GetSection("SessionCoordinatorOptions"));
 
 builder.Services.Configure<MessageBusOptions>(
     builder.Configuration.GetSection("MessageBusOptions"));
@@ -94,9 +91,9 @@ try
 {
     app.UseEventBus(eventBus =>
     {
-        eventBus.Subscribe<MonitorSessionQueueEvent, IIntegrationEventHandler<MonitorSessionQueueEvent>>();
+        eventBus.Subscribe<SessionGeneratedEvent, IIntegrationEventHandler<SessionGeneratedEvent>>();
         eventBus.Subscribe<SessionCancelledEvent, IIntegrationEventHandler<SessionCancelledEvent>>();
-        eventBus.Publish(new MonitorSessionQueueEvent());
+        eventBus.Publish(new SessionGeneratedEvent());
     });
 }
 catch (Exception ex)

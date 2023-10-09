@@ -1,23 +1,19 @@
-﻿using Microsoft.Extensions.Options;
+﻿using Microsoft.EntityFrameworkCore.Storage;
 using RabbitMQ.Lib.EventBus.Abstractions;
 using RabbitMQ.Lib.EventBus.Events;
 using SessionCoordinatorService.Entities;
-using SessionCoordinatorService.Options;
-using SessionCoordinatorService.Services.DTOs;
 
 namespace SessionCoordinatorService.Services
 {
     public class SessionManagementService
     {
-        private readonly SessionCoordinatorOptions _options;
         private readonly ILogger<SessionManagementService> _logger;
         private readonly ISupportRepository _supportRepository;
         private readonly IEventBus _eventBus;
         private readonly ITranasctionProviderRepository _tranasctionProviderRepository;
 
-        public SessionManagementService(IOptions<SessionCoordinatorOptions> options, ILogger<SessionManagementService> logger, ISupportRepository supportRepository, IEventBus eventBus, ITranasctionProviderRepository tranasctionProviderRepository)
+        public SessionManagementService(ILogger<SessionManagementService> logger, ISupportRepository supportRepository, IEventBus eventBus, ITranasctionProviderRepository tranasctionProviderRepository)
         {
-            _options = options.Value;
             _logger = logger;
             _supportRepository = supportRepository;
             _eventBus = eventBus;
@@ -36,62 +32,54 @@ namespace SessionCoordinatorService.Services
             return true;
         }
 
-        public async Task DeactivateOverflowTeam()
+        public async Task DeactivateOverflowTeam()//called 1 per day via quatrz
         {
             var overflowTeam = await _supportRepository.GetOverflowTeam();
             if (overflowTeam.Active)
             {
                 overflowTeam.Active = false;
-                await _supportRepository.UpdateOverflowTeam(overflowTeam);
+                await _supportRepository.UpdateTeamAsync(overflowTeam);
             }
         }
 
         public async Task<bool> AppendToAgent()
         {
-            var transaction = await _tranasctionProviderRepository.BeginTransaction();
+            IDbContextTransaction transaction = null;
 
             try
             {
-                var agentsWithCapacity = await _supportRepository.GetAgentsWithCapacity();
-
-                if (!agentsWithCapacity.Any())
-                {
-                    return false; //in this case there are no free agent yet, so task is not yet complete
-                }
-
-                var sessions = await _supportRepository.GetSessionQueue();
-                if (!agentsWithCapacity.Any())
+                var sessions = await _supportRepository.GetOrderedSessionQueue();
+                if (!sessions.Any())
                 {
                     return true; //in this case the sessions have been already assigned (may be by another instance) so we are respoding with true to "ack" the rabbitMQ message
                 }
 
-                var lowerCount = agentsWithCapacity.Count > sessions.Count ? sessions.Count : agentsWithCapacity.Count;
-
-                var activeAgentSessions = new List<ActiveAgentSession>();
-
-                var sessionsToRemove = new List<SessionQueueItem>();
-
-                for (int i = 0; i < lowerCount; i++)
+                foreach (var session in sessions)
                 {
-                    activeAgentSessions.Add(new ActiveAgentSession
+                    transaction = await _tranasctionProviderRepository.BeginTransaction();
+
+                    var agent = await _supportRepository.GetAgentWithCapacity();
+
+                    if (agent == null)
                     {
-                        Id = Guid.NewGuid(),
-                        SessionId = sessions[i].Id,
-                        AgentId = agentsWithCapacity[i].Id
-                    });
-                    sessionsToRemove.Add(sessions[i]);
+                        break;
+                    }
+
+                    await _supportRepository.AddActiveAgentSession(new ActiveAgentSession { AgentId = agent.Id, SessionId = session.Id, Id = Guid.NewGuid() });
+                    await _supportRepository.RemoveFromSessionQueue(session);
+                    
+                    await _tranasctionProviderRepository.CommitTransaction(transaction);
+
                 }
-
-                await _supportRepository.AddActiveAgentSessions(activeAgentSessions);
-                await _supportRepository.RemoveFromSessionsQueue(sessionsToRemove);
-
-                await _tranasctionProviderRepository.CommitTransaction(transaction);
 
                 return true;
             }
             catch (Exception ex)
             {
-                await _tranasctionProviderRepository.RollbackTransaction(transaction);
+                if (transaction != null)
+                {
+                    await _tranasctionProviderRepository.RollbackTransaction(transaction);
+                }
 
                 _logger.LogError(ex.Message, ex);
 
@@ -99,91 +87,86 @@ namespace SessionCoordinatorService.Services
             }
             finally
             {
-                await _tranasctionProviderRepository.DisposeTransaction(transaction);
+                if (transaction != null)
+                {
+                    await _tranasctionProviderRepository.DisposeTransaction(transaction);
+                }
             }
         }
 
-        public async Task<Guid?> GenerateSession(Guid sessionId)
+        public async Task<Guid?> GenerateSession()
         {
-            var team = await _supportRepository.GetActiveTeam();
-            var teamCapacity = GetTeamCapacity(team);
-            int queueLength = await GetSessionQueueLength();
+            var activeTeams = await _supportRepository.GetActiveTeams();
+            int queueLength = await _supportRepository.GetSessionQueueCount();
 
-            if (queueLength > teamCapacity * 1.5)
+            if (!CanBeQueued(GetTeamCapacity(activeTeams), queueLength))//max queue capacity reached
             {
-                var overflowInfo = await GetOverflowInfo();
-                if (overflowInfo.IsAvailable)
+                var overflowTeam = activeTeams.SingleOrDefault(x => x.Name == Constants.OverflowTeamName);
+                if (overflowTeam != null) //overflow is already active, nothing else is possible to do
                 {
-                    var overflowTeam = overflowInfo.OverflowTeam;
+                    return null;
+                }
 
-                    if (!overflowTeam.Active)
-                    {
-                        await ActivateTeam(overflowTeam);
-                    } //MAY BE OVERFLOW TEAM CAPACITY SHOULD BE ADDED TO THE MAIN TEAM CAPACITY, ASK TASK CREATORS
+                overflowTeam = await _supportRepository.GetOverflowTeam();
 
-                    if (!HasAvailableAgent(overflowTeam))
+                if (overflowTeam == null) //overflow team doesn't exist in db
+                {
+                    return null;
+                }
+
+                var currentTimeHour = DateTime.Now.Hour;
+
+                if (currentTimeHour >= overflowTeam.WorkStartHourAt && currentTimeHour < overflowTeam.WorkFinishHourAt) //overflow team can be activated
+                {
+                    await ActivateTeam(overflowTeam);
+
+                    activeTeams = await _supportRepository.GetActiveTeams(); //refreshing in case if other instances already occupied overflow agents
+                    queueLength = await _supportRepository.GetSessionQueueCount();
+
+                    if (!CanBeQueued(GetTeamCapacity(activeTeams), queueLength))//other instances already occupied overflow agents
                     {
                         return null;
                     }
 
-                    return await GenerateAndPublishSession();
+                    return await GenerateSessionAndNotify();
                 }
 
-                return null;
+                return null; //overflow team can't be activated
             }
 
-            return await GenerateAndPublishSession();
+            return await GenerateSessionAndNotify();
         }
 
-        private async Task<int> GetSessionQueueLength()
+        private bool CanBeQueued(int teamCapacity, int queueLength)
         {
-            return await _supportRepository.GetSessionQueueCount();
+            return queueLength < teamCapacity * 1.5;
         }
 
         private async Task ActivateTeam(Team overflowTeam)
         {
             overflowTeam.Active = true;
 
-            await _supportRepository.UpdateAsync(overflowTeam);
+            await _supportRepository.UpdateTeamAsync(overflowTeam);
         }
 
-        private bool HasAvailableAgent(Team team)
+        private int GetTeamCapacity(List<Team> teams)
         {
-            return team.Agents.Any(x => x.ActiveAgentSessions.Count < x.Seniority.SeniorityMultiplier);
-        }
-
-        private async Task<Team> GetActiveTeam()
-        {
-            return await _supportRepository.GetActiveTeam();
-        }
-
-        private int GetTeamCapacity(Team team)
-        {
-            return team.Agents.Select(x => x.Seniority).Select(x => x.SeniorityMultiplier).Sum();
-        }
-
-        private async Task<OverflowInfo> GetOverflowInfo()
-        {
-            var result = new OverflowInfo { IsAvailable = false };
-
-            var timeHour = DateTime.Now.Hour;
-
-            if (timeHour > _options.OfficeHourStart && timeHour < _options.OfficeHourEnd)
+            var agents = new List<Agent>();
+            foreach (var team in teams)
             {
-                result.OverflowTeam = await _supportRepository.GetOverflowTeam();
-                result.IsAvailable = true;
+                agents.AddRange(team.Agents);
             }
 
-            return result;
+            return agents.Select(x => x.Seniority).Select(x => x.SeniorityMultiplier).Sum();
         }
 
-        private async Task<Guid> GenerateAndPublishSession()
+        private async Task<Guid> GenerateSessionAndNotify()
         {
             var sessionId = Guid.NewGuid();
 
             await _supportRepository.AddToSessionQueue(new SessionQueueItem { CreatedAt = DateTime.Now, Id = sessionId });
 
-            _eventBus.Publish(new MonitorSessionQueueEvent { SessionId = sessionId });
+            _eventBus.Publish(new SessionGeneratedEvent { SessionId = sessionId });
 
             return sessionId;
         }

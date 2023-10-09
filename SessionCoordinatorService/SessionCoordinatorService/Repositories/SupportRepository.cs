@@ -1,68 +1,108 @@
-﻿using SessionCoordinatorService.Entities;
+﻿using Microsoft.EntityFrameworkCore;
+using SessionCoordinatorService.Entities;
 using SessionCoordinatorService.Services;
 
 namespace SessionCoordinatorService.Repositories
 {
     public class SupportRepository : ISupportRepository
     {
-        public Task AddActiveAgentSessions(List<ActiveAgentSession> activeAgentSessions)
+        private readonly SupportDbContext _dbContext;
+
+        public SupportRepository(SupportDbContext dbContext)
         {
-            throw new NotImplementedException();
+            _dbContext = dbContext;
         }
 
-        public Task AddToSessionQueue(SessionQueueItem sessionQueue)
+        public async Task AddActiveAgentSession(ActiveAgentSession activeAgentSession)
         {
-            throw new NotImplementedException();
+            await _dbContext.ActiveAgentSessions.AddRangeAsync(activeAgentSession);
+
+            await _dbContext.SaveChangesAsync();
         }
 
-        public Task DeleteActiveAgentSession(ActiveAgentSession session)
+        public async Task AddToSessionQueue(SessionQueueItem sessionQueue)
         {
-            throw new NotImplementedException();
+            await _dbContext.SessionQueue.AddAsync(sessionQueue);
+
+            await _dbContext.SaveChangesAsync();
         }
 
-        public Task<ActiveAgentSession> GetActiveAgentSession(Guid sessionId)
+        public async Task DeleteActiveAgentSession(ActiveAgentSession session)
         {
-            throw new NotImplementedException();
+            _dbContext.ActiveAgentSessions.Remove(session);
+
+            await _dbContext.SaveChangesAsync();
         }
 
-        public Task<Team> GetActiveTeam()
+        public async Task<ActiveAgentSession> GetActiveAgentSession(Guid sessionId)
         {
-            throw new NotImplementedException();
+            return await _dbContext.ActiveAgentSessions.SingleOrDefaultAsync(x => x.Id == sessionId);
         }
 
-        public Task<List<Agent>> GetAgentsWithCapacity()
+        public async Task<List<Team>> GetActiveTeams()
         {
-            throw new NotImplementedException();
+            var currentTimeHour = DateTime.Now.Hour;
+
+            return await _dbContext.Teams
+                         .Include(x => x.Agents)
+                            .ThenInclude(x => x.ActiveAgentSessions)
+                         .Include(x => x.Agents)
+                            .ThenInclude(x => x.Seniority)
+                         .Where(x => x.WorkStartHourAt <= currentTimeHour && x.WorkFinishHourAt > currentTimeHour && x.Active)
+                         .ToListAsync();
         }
 
-        public Task<Team> GetOverflowTeam()
+        public async Task<Agent> GetAgentWithCapacity()
         {
-            throw new NotImplementedException();
+            var currentTimeHour = DateTime.Now.Hour;
+            var agent = await _dbContext.Agents
+                            .Include(x => x.Team)
+                            .Include(x => x.ActiveAgentSessions)
+                            .Include(x => x.Seniority) //making sure to keep lower seniority agetns busy
+                            .Where(x =>
+                                x.ActiveAgentSessions.Count < x.Seniority.SeniorityMultiplier &&
+                                x.Team.Active &&
+                                x.Team.WorkFinishHourAt > currentTimeHour &&
+                                x.Team.WorkStartHourAt <= currentTimeHour)
+                            .GroupBy(x => x.Seniority.Priority)
+                            .OrderBy(x => x.Key)
+                            .Select(x=>x.OrderBy(y=>y.ActiveAgentSessions.Count).FirstOrDefault())
+                            .FirstOrDefaultAsync();
+            return agent;
         }
 
-        public Task<List<SessionQueueItem>> GetSessionQueue()
+        public async Task<Team> GetOverflowTeam()
         {
-            throw new NotImplementedException();
+            return await _dbContext.Teams
+                         .Include(x => x.Agents)
+                            .ThenInclude(x => x.ActiveAgentSessions)
+                         .Include(x => x.Agents)
+                            .ThenInclude(x => x.Seniority)
+                         .SingleOrDefaultAsync(x => x.Name == Constants.OverflowTeamName);
+
         }
 
-        public Task<int> GetSessionQueueCount()
+        public async Task<List<SessionQueueItem>> GetOrderedSessionQueue()
         {
-            throw new NotImplementedException();
+            return await _dbContext.SessionQueue.OrderBy(x => x.CreatedAt).ToListAsync();
         }
 
-        public Task RemoveFromSessionsQueue(List<SessionQueueItem> sessionsToRemove)
+        public async Task<int> GetSessionQueueCount()
         {
-            throw new NotImplementedException();
+            return await _dbContext.SessionQueue.CountAsync();
         }
 
-        public Task UpdateAsync(Team overflowTeam)
+        public async Task RemoveFromSessionQueue(SessionQueueItem sessionToRemove)
         {
-            throw new NotImplementedException();
+            _dbContext.SessionQueue.RemoveRange(sessionToRemove);
+
+            await _dbContext.SaveChangesAsync();
         }
 
-        public Task UpdateOverflowTeam(Team overflowTeam)
+        public async Task UpdateTeamAsync(Team team)
         {
-            throw new NotImplementedException();
+            _dbContext.Teams.Update(team);
+            await _dbContext.SaveChangesAsync();
         }
     }
 }

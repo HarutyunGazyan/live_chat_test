@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using SessionCoordinatorService.Services;
 
 namespace SessionCoordinatorService.Entities
 {
@@ -110,7 +111,7 @@ namespace SessionCoordinatorService.Entities
             new Team
             {
                 Id = teamOverflow,
-                Name = "Overflow",
+                Name = Constants.OverflowTeamName,
                 WorkStartHourAt = 10,
                 WorkFinishHourAt = 18,
                 Active = false
