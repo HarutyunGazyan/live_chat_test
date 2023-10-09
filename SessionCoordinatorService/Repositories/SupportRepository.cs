@@ -42,7 +42,7 @@ namespace SessionCoordinatorService.Repositories
 
         public async Task<List<Team>> GetActiveTeams()
         {
-            var currentTimeHour = Helper.GetDefaultDateTime(DateTime.Now.Hour);
+            var currentTimeHour = Helper.GetDefaultDateTime(DateTime.Now.Hour);//TODO fix bug with a next day
 
             return await _dbContext.Teams
                          .Include(x => x.Agents)
@@ -55,7 +55,7 @@ namespace SessionCoordinatorService.Repositories
 
         public async Task<Agent> GetAgentWithCapacity()
         {
-            var currentTimeHour = Helper.GetDefaultDateTime(DateTime.Now.Hour);
+            var currentTimeHour = Helper.GetDefaultDateTime(DateTime.Now.Hour);//TODO fix bug with a next day
 
             var agent = await _dbContext.Agents
                             .Include(x => x.Team)
