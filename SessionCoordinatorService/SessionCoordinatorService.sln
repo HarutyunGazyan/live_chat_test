@@ -3,7 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.7.34031.279
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SessionCoordinatorService", "SessionCoordinatorService\SessionCoordinatorService.csproj", "{A5F2E7FA-172B-4772-B450-38E06F0C4A5A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SessionCoordinatorService", "SessionCoordinatorService\SessionCoordinatorService.csproj", "{A5F2E7FA-172B-4772-B450-38E06F0C4A5A}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RabbitMQ.Lib", "..\RabbitMQ.Lib\RabbitMQ.Lib\RabbitMQ.Lib.csproj", "{59FB9D04-6F5D-4FA9-830F-BD6154B12014}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{A5F2E7FA-172B-4772-B450-38E06F0C4A5A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A5F2E7FA-172B-4772-B450-38E06F0C4A5A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A5F2E7FA-172B-4772-B450-38E06F0C4A5A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{59FB9D04-6F5D-4FA9-830F-BD6154B12014}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{59FB9D04-6F5D-4FA9-830F-BD6154B12014}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{59FB9D04-6F5D-4FA9-830F-BD6154B12014}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{59FB9D04-6F5D-4FA9-830F-BD6154B12014}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

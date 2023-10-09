@@ -1,6 +1,4 @@
-﻿using Microsoft.eShopOnContainers.BuildingBlocks.EventBus.Events;
-
-namespace RabbitMQ.Lib.EventBus.Events
+﻿namespace RabbitMQ.Lib.EventBus.Events
 {
     public class SessionCreatedEvent : IntegrationEvent
     {

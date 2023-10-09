@@ -1,4 +1,8 @@
 using Microsoft.EntityFrameworkCore;
+using RabbitMQ.Client;
+using RabbitMQ.Lib.EventBus.Abstractions;
+using RabbitMQ.Lib.EventBus.Events;
+using RabbitMQ.Lib.EventBusRabbitMQ;
 using SessionCoordinatorService.Entities;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -15,6 +19,18 @@ builder.Services.AddDbContext<SupportDbContext>(options =>
     options.UseSqlServer(configuration.GetSection("DatabaseUrl").Value);
 });
 
+builder.Services.AddSingleton<IRabbitMQPersistentConnection>(sp =>
+{
+    var logger = sp.GetRequiredService<ILogger<DefaultRabbitMQPersistentConnection>>();
+    var factory = new ConnectionFactory()
+    {
+        HostName = configuration.GetSection("RabbitMQConnection").Value
+    };
+
+    return new DefaultRabbitMQPersistentConnection(factory, logger);
+});
+
+builder.Services.AddSingleton<IEventBus, EventBusRabbitMQ>();
 
 var app = builder.Build();
 
@@ -36,5 +52,15 @@ app.UseAuthorization();
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
+
+var eventBus = app.Services.GetRequiredService<IEventBus>();
+try
+{
+    eventBus.Publish(new CreateSessionRequestEvent());
+}
+catch (Exception ex)
+{
+
+}
 
 app.Run();

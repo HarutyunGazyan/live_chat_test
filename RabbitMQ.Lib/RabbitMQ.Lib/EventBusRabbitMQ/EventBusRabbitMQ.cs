@@ -1,20 +1,20 @@
-﻿using Microsoft.eShopOnContainers.BuildingBlocks.EventBus.Abstractions;
-using Microsoft.eShopOnContainers.BuildingBlocks.EventBus.Events;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Polly;
 using Polly.Retry;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using RabbitMQ.Client.Exceptions;
+using RabbitMQ.Lib.EventBus.Abstractions;
+using RabbitMQ.Lib.EventBus.Events;
 using System.Net.Sockets;
 using System.Text;
 
-namespace Microsoft.eShopOnContainers.BuildingBlocks.EventBusRabbitMQ
+namespace RabbitMQ.Lib.EventBusRabbitMQ
 {
     public class EventBusRabbitMQ : IEventBus, IDisposable
     {
-        const string BROKER_NAME = "eshop_event_bus";
+        const string BROKER_NAME = "support_event_bus";
 
         private readonly IRabbitMQPersistentConnection _persisterConnection;
         private readonly ILogger<EventBusRabbitMQ> _logger;

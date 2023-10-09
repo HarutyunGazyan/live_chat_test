@@ -1,7 +1,6 @@
-﻿using Microsoft.eShopOnContainers.BuildingBlocks.EventBus.Events;
-using System.Threading.Tasks;
+﻿using RabbitMQ.Lib.EventBus.Events;
 
-namespace Microsoft.eShopOnContainers.BuildingBlocks.EventBus.Abstractions
+namespace RabbitMQ.Lib.EventBus.Abstractions
 {
     public interface IIntegrationEventHandler<in TIntegrationEvent> : IIntegrationEventHandler 
         where TIntegrationEvent: IntegrationEvent

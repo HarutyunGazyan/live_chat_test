@@ -1,6 +1,6 @@
-﻿using Microsoft.eShopOnContainers.BuildingBlocks.EventBus.Events;
+﻿using RabbitMQ.Lib.EventBus.Events;
 
-namespace Microsoft.eShopOnContainers.BuildingBlocks.EventBus.Abstractions
+namespace RabbitMQ.Lib.EventBus.Abstractions
 {
     public interface IEventBus
     {

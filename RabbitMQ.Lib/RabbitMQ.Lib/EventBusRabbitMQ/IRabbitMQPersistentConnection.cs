@@ -1,10 +1,9 @@
 ﻿using RabbitMQ.Client;
-using System;
 
-namespace Microsoft.eShopOnContainers.BuildingBlocks.EventBusRabbitMQ
+namespace RabbitMQ.Lib.EventBusRabbitMQ
 {
 
-    public interface IRabbitMQPersisterConnection
+    public interface IRabbitMQPersistentConnection
         : IDisposable
     {
         bool IsConnected { get; }

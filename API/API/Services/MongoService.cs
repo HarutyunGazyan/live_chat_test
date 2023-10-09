@@ -4,7 +4,6 @@
     using MongoDB.Driver;
     using System;
 
-
     public class SessionService
     {
         public readonly IMongoCollection<Session> sessionCollection;

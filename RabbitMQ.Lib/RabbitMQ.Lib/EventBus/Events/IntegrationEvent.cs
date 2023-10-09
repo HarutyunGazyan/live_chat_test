@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Microsoft.eShopOnContainers.BuildingBlocks.EventBus.Events
+﻿namespace RabbitMQ.Lib.EventBus.Events
 {
     public class IntegrationEvent
     {
