@@ -3,13 +3,18 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.7.34031.279
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "API", "API\API.csproj", "{C5BACD2D-31EB-406F-909D-D72592F4A0D3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Support.API", "API\Support.API.csproj", "{C5BACD2D-31EB-406F-909D-D72592F4A0D3}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Monitor", "Monitor\Monitor.csproj", "{1185EFAE-9F8F-489D-8A98-6780FB0204CD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Support.Monitor", "Monitor\Support.Monitor.csproj", "{1185EFAE-9F8F-489D-8A98-6780FB0204CD}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SessionCoordinatorService", "SessionCoordinatorService\SessionCoordinatorService.csproj", "{4B59CF3A-589A-420A-978E-F89814E71F60}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Support.SessionCoordinatorService", "SessionCoordinatorService\Support.SessionCoordinatorService.csproj", "{4B59CF3A-589A-420A-978E-F89814E71F60}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shared.Lib", "Shared.Lib\Shared.Lib.csproj", "{50A5EBEE-4C90-45F2-843D-9DE15B537B68}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Support.Shared.Lib", "Shared.Lib\Support.Shared.Lib.csproj", "{50A5EBEE-4C90-45F2-843D-9DE15B537B68}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{A111DBEC-11AF-4A4C-B7B0-B280EDBF1088}"
+	ProjectSection(SolutionItems) = preProject
+		README.md = README.md
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

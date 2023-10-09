@@ -20,7 +20,7 @@ builder.Services.AddControllersWithViews();
 
 builder.Services.AddDbContext<SupportDbContext>(options =>
 {
-    options.UseSqlServer(configuration.GetSection("DatabaseUrl").Value);
+    options.UseSqlServer(configuration.GetSection("DatabaseUrl").Value, x=>x.MigrationsAssembly("SessionCoordinatorService"));
 });
 
 builder.Services.AddEventBus(

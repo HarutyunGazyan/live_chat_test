@@ -1,37 +1,29 @@
 using API.Services;
+using Microsoft.EntityFrameworkCore;
+using Shared.Library.Entities;
 
 var builder = WebApplication.CreateBuilder(args);
-var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
-// Add services to the container.
+var configuration = builder.Configuration
+ .SetBasePath(System.IO.Directory.GetCurrentDirectory())
+ .AddJsonFile($"appsettings.json", optional: false)
+ .AddEnvironmentVariables()
+ .Build();
+
 builder.Services.AddControllersWithViews();
-builder.Services.AddStackExchangeRedisCache(options =>
+
+builder.Services.AddDbContext<SupportDbContext>(options =>
 {
-    options.Configuration = "127.0.0.1:6379";
-    options.InstanceName = "SessionsInstance";
+    options.UseSqlServer(configuration.GetSection("DatabaseUrl").Value);
 });
-builder.Services.AddDistributedMemoryCache();
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy(name: MyAllowSpecificOrigins,
-                      builder =>
-                      {
-                          builder
-                          .AllowAnyOrigin()
-                          .AllowAnyMethod()
-                          .AllowAnyHeader()
-                          .AllowCredentials();
-                      });
-});
+
 builder.Services.AddSingleton<SessionService>();
 builder.Services.AddHttpClient();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 
@@ -47,5 +39,3 @@ app.MapControllerRoute(
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
 app.Run();
-
-app.UseCors(MyAllowSpecificOrigins);

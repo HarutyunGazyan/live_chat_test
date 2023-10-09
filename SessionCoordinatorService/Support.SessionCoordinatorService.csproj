@@ -22,11 +22,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Migrations\" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\Shared.Lib\Shared.Lib.csproj" />
+    <ProjectReference Include="..\Shared.Lib\Support.Shared.Lib.csproj" />
   </ItemGroup>
 
 </Project>
