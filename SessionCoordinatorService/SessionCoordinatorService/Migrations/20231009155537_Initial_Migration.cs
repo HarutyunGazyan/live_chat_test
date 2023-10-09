@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace SessionCoordinatorService.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class Initial_Migration : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -19,7 +19,8 @@ namespace SessionCoordinatorService.Migrations
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    SeniorityMultiplier = table.Column<int>(type: "int", nullable: false)
+                    SeniorityMultiplier = table.Column<int>(type: "int", nullable: false),
+                    Priority = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -27,13 +28,26 @@ namespace SessionCoordinatorService.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "SessionQueue",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_SessionQueue", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Teams",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    WorkStartHourAt = table.Column<int>(type: "int", nullable: false),
-                    WorkFinishHourAt = table.Column<int>(type: "int", nullable: false)
+                    Name = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    WorkStartHourAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    WorkFinishHourAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Active = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -109,24 +123,24 @@ namespace SessionCoordinatorService.Migrations
 
             migrationBuilder.InsertData(
                 table: "Seniority",
-                columns: new[] { "Id", "Name", "SeniorityMultiplier" },
+                columns: new[] { "Id", "Name", "Priority", "SeniorityMultiplier" },
                 values: new object[,]
                 {
-                    { new Guid("4b2b355f-c2f6-487e-b2af-58a37243218b"), "Senior", 8 },
-                    { new Guid("693322d7-1989-4e35-8449-50d7262be52c"), "Junior", 4 },
-                    { new Guid("70e14af8-2b36-491a-9fe7-f041e6f8548d"), "Team Lead", 5 },
-                    { new Guid("95d957dc-7184-4506-b4f8-f0eca3d4d9f5"), "Mid-Level", 6 }
+                    { new Guid("6e1865e1-3524-4b08-a0ce-f2851427e547"), "Senior", 3, 8 },
+                    { new Guid("9f1a2439-4b5c-4200-ab48-590e2dc935e6"), "Junior", 1, 4 },
+                    { new Guid("de62c6ac-1d06-4643-8377-4303f5a7ce7d"), "Mid-Level", 2, 6 },
+                    { new Guid("eb0c6f3a-5b34-44ce-b12a-595db4139bef"), "Team Lead", 4, 5 }
                 });
 
             migrationBuilder.InsertData(
                 table: "Teams",
-                columns: new[] { "Id", "Name", "WorkFinishHourAt", "WorkStartHourAt" },
+                columns: new[] { "Id", "Active", "Name", "WorkFinishHourAt", "WorkStartHourAt" },
                 values: new object[,]
                 {
-                    { new Guid("28fbf6fe-1a4a-4304-b88d-acd03e273014"), "A", 18, 10 },
-                    { new Guid("3a5aab28-b35d-40fe-bca1-e9ec849b6459"), "B", 2, 18 },
-                    { new Guid("6e9be61e-0bb7-42b7-8462-bb45f8fab017"), "Overflow", 18, 10 },
-                    { new Guid("e8120c31-461b-4a93-8f61-9e37dbf5a8cb"), "C", 10, 2 }
+                    { new Guid("487de4b0-bef5-40b6-97bd-4d95d9848acb"), true, "A", new DateTime(1, 1, 1, 18, 1, 1, 0, DateTimeKind.Unspecified), new DateTime(1, 1, 1, 10, 1, 1, 0, DateTimeKind.Unspecified) },
+                    { new Guid("4fea00c1-d25f-47a6-8fa0-bca34d15e90d"), true, "B", new DateTime(1, 1, 2, 2, 1, 1, 0, DateTimeKind.Unspecified), new DateTime(1, 1, 1, 18, 1, 1, 0, DateTimeKind.Unspecified) },
+                    { new Guid("5ba95a9a-ecbe-4f8a-9527-a7245bf094be"), false, "Overflow", new DateTime(1, 1, 1, 18, 1, 1, 0, DateTimeKind.Unspecified), new DateTime(1, 1, 1, 10, 1, 1, 0, DateTimeKind.Unspecified) },
+                    { new Guid("b932985c-df11-4658-b4cf-71778aad5282"), true, "C", new DateTime(1, 1, 1, 10, 1, 1, 0, DateTimeKind.Unspecified), new DateTime(1, 1, 2, 2, 1, 1, 0, DateTimeKind.Unspecified) }
                 });
 
             migrationBuilder.InsertData(
@@ -134,28 +148,34 @@ namespace SessionCoordinatorService.Migrations
                 columns: new[] { "Id", "Name", "SeniorityId", "TeamId" },
                 values: new object[,]
                 {
-                    { new Guid("011120b1-deb1-4a25-a722-07b0c3cc619f"), "Team_A_Team_Lead", new Guid("70e14af8-2b36-491a-9fe7-f041e6f8548d"), new Guid("28fbf6fe-1a4a-4304-b88d-acd03e273014") },
-                    { new Guid("10fbdf23-ddb3-4547-b015-54c5e19fa0b6"), "Team_A_Mid_1", new Guid("95d957dc-7184-4506-b4f8-f0eca3d4d9f5"), new Guid("28fbf6fe-1a4a-4304-b88d-acd03e273014") },
-                    { new Guid("27356d94-050d-449d-81ef-2bf501abc3e3"), "Team_Overflow_Junior_5", new Guid("693322d7-1989-4e35-8449-50d7262be52c"), new Guid("6e9be61e-0bb7-42b7-8462-bb45f8fab017") },
-                    { new Guid("3b5fdebe-e447-4bca-8e40-bf95b176a8f5"), "Team_B_Mid", new Guid("95d957dc-7184-4506-b4f8-f0eca3d4d9f5"), new Guid("3a5aab28-b35d-40fe-bca1-e9ec849b6459") },
-                    { new Guid("42fad6d9-49a6-4d74-a1f1-6741de0273ed"), "Team_Overflow_Junior_1", new Guid("693322d7-1989-4e35-8449-50d7262be52c"), new Guid("6e9be61e-0bb7-42b7-8462-bb45f8fab017") },
-                    { new Guid("4392a336-2598-4ee2-a14c-19e0486d3fdd"), "Team_Overflow_Junior_4", new Guid("693322d7-1989-4e35-8449-50d7262be52c"), new Guid("6e9be61e-0bb7-42b7-8462-bb45f8fab017") },
-                    { new Guid("68c30ca4-2d2e-4e08-a576-b2c0ba1bd599"), "Team_Overflow_Junior_3", new Guid("693322d7-1989-4e35-8449-50d7262be52c"), new Guid("6e9be61e-0bb7-42b7-8462-bb45f8fab017") },
-                    { new Guid("69cd109c-ac88-4c30-984a-10c8530c4be7"), "Team_B_Junior_1", new Guid("693322d7-1989-4e35-8449-50d7262be52c"), new Guid("3a5aab28-b35d-40fe-bca1-e9ec849b6459") },
-                    { new Guid("6d16410a-19a9-4298-9f1c-f9455a214d0e"), "Team_C_Mid_1", new Guid("95d957dc-7184-4506-b4f8-f0eca3d4d9f5"), new Guid("e8120c31-461b-4a93-8f61-9e37dbf5a8cb") },
-                    { new Guid("6ec60c06-c978-42a4-8c4f-3c10cd5d4f22"), "Team_Overflow_Junior_2", new Guid("693322d7-1989-4e35-8449-50d7262be52c"), new Guid("6e9be61e-0bb7-42b7-8462-bb45f8fab017") },
-                    { new Guid("75eac2fa-b183-48f2-9a85-765b266c5540"), "Team_B_Senior", new Guid("4b2b355f-c2f6-487e-b2af-58a37243218b"), new Guid("3a5aab28-b35d-40fe-bca1-e9ec849b6459") },
-                    { new Guid("8ae34fde-fab5-4e06-8483-48801321dc14"), "Team_A_Junior", new Guid("693322d7-1989-4e35-8449-50d7262be52c"), new Guid("28fbf6fe-1a4a-4304-b88d-acd03e273014") },
-                    { new Guid("933a6450-49b8-47a7-83ee-2a66cd175335"), "Team_C_Mid_2", new Guid("95d957dc-7184-4506-b4f8-f0eca3d4d9f5"), new Guid("e8120c31-461b-4a93-8f61-9e37dbf5a8cb") },
-                    { new Guid("9ce592e4-7de9-4121-9164-78a068659a76"), "Team_A_Mid_2", new Guid("95d957dc-7184-4506-b4f8-f0eca3d4d9f5"), new Guid("28fbf6fe-1a4a-4304-b88d-acd03e273014") },
-                    { new Guid("c0acd479-7239-45f6-ae01-5d8a467499f0"), "Team_Overflow_Junior_6", new Guid("693322d7-1989-4e35-8449-50d7262be52c"), new Guid("6e9be61e-0bb7-42b7-8462-bb45f8fab017") },
-                    { new Guid("edf5938d-8397-404f-abf4-377e51607707"), "Team_B_Junior_2", new Guid("693322d7-1989-4e35-8449-50d7262be52c"), new Guid("3a5aab28-b35d-40fe-bca1-e9ec849b6459") }
+                    { new Guid("0d65da4c-b328-40c3-b71c-d4b627503fe3"), "Team_Overflow_Junior_5", new Guid("9f1a2439-4b5c-4200-ab48-590e2dc935e6"), new Guid("5ba95a9a-ecbe-4f8a-9527-a7245bf094be") },
+                    { new Guid("2d732fcc-6dc0-40ea-a6cb-4b06af5279d5"), "Team_A_Team_Lead", new Guid("eb0c6f3a-5b34-44ce-b12a-595db4139bef"), new Guid("487de4b0-bef5-40b6-97bd-4d95d9848acb") },
+                    { new Guid("3ca51880-68d4-4942-9ef8-4896ebba8d7c"), "Team_B_Mid", new Guid("de62c6ac-1d06-4643-8377-4303f5a7ce7d"), new Guid("4fea00c1-d25f-47a6-8fa0-bca34d15e90d") },
+                    { new Guid("55850d77-f5b4-4338-9136-b6f7def8346e"), "Team_B_Junior_2", new Guid("9f1a2439-4b5c-4200-ab48-590e2dc935e6"), new Guid("4fea00c1-d25f-47a6-8fa0-bca34d15e90d") },
+                    { new Guid("59398f8e-b752-426b-bacc-6d35cbccfcbd"), "Team_Overflow_Junior_4", new Guid("9f1a2439-4b5c-4200-ab48-590e2dc935e6"), new Guid("5ba95a9a-ecbe-4f8a-9527-a7245bf094be") },
+                    { new Guid("5defb01e-36de-4ff0-94b4-5a38f0b12e2c"), "Team_C_Mid_1", new Guid("de62c6ac-1d06-4643-8377-4303f5a7ce7d"), new Guid("b932985c-df11-4658-b4cf-71778aad5282") },
+                    { new Guid("624789b6-b5f3-440c-be6c-d5e4f6fe276e"), "Team_A_Junior", new Guid("9f1a2439-4b5c-4200-ab48-590e2dc935e6"), new Guid("487de4b0-bef5-40b6-97bd-4d95d9848acb") },
+                    { new Guid("6c07866e-3044-41d0-a493-d39cebabd874"), "Team_B_Junior_1", new Guid("9f1a2439-4b5c-4200-ab48-590e2dc935e6"), new Guid("4fea00c1-d25f-47a6-8fa0-bca34d15e90d") },
+                    { new Guid("797d6a9d-dba8-46e9-bd72-729fa24ecb2a"), "Team_Overflow_Junior_6", new Guid("9f1a2439-4b5c-4200-ab48-590e2dc935e6"), new Guid("5ba95a9a-ecbe-4f8a-9527-a7245bf094be") },
+                    { new Guid("8e587fa2-e482-4227-b2e1-ac54ec6cc17c"), "Team_A_Mid_1", new Guid("de62c6ac-1d06-4643-8377-4303f5a7ce7d"), new Guid("487de4b0-bef5-40b6-97bd-4d95d9848acb") },
+                    { new Guid("a67b0b95-8d84-4222-a7aa-9d22b5e2764c"), "Team_Overflow_Junior_3", new Guid("9f1a2439-4b5c-4200-ab48-590e2dc935e6"), new Guid("5ba95a9a-ecbe-4f8a-9527-a7245bf094be") },
+                    { new Guid("aa0ec6aa-a2a9-4960-b6be-95be0eadd5e8"), "Team_Overflow_Junior_1", new Guid("9f1a2439-4b5c-4200-ab48-590e2dc935e6"), new Guid("5ba95a9a-ecbe-4f8a-9527-a7245bf094be") },
+                    { new Guid("b48e7123-a765-44d6-9d50-00c659d5bd2f"), "Team_C_Mid_2", new Guid("de62c6ac-1d06-4643-8377-4303f5a7ce7d"), new Guid("b932985c-df11-4658-b4cf-71778aad5282") },
+                    { new Guid("d0eadccd-ea31-4b74-b582-b6844539e1c3"), "Team_Overflow_Junior_2", new Guid("9f1a2439-4b5c-4200-ab48-590e2dc935e6"), new Guid("5ba95a9a-ecbe-4f8a-9527-a7245bf094be") },
+                    { new Guid("d9f6e9a0-46a4-4c16-8a23-7c2e0184b485"), "Team_A_Mid_2", new Guid("de62c6ac-1d06-4643-8377-4303f5a7ce7d"), new Guid("487de4b0-bef5-40b6-97bd-4d95d9848acb") },
+                    { new Guid("e84db322-ae6e-4b85-a36c-3720d68391c0"), "Team_B_Senior", new Guid("6e1865e1-3524-4b08-a0ce-f2851427e547"), new Guid("4fea00c1-d25f-47a6-8fa0-bca34d15e90d") }
                 });
 
             migrationBuilder.CreateIndex(
                 name: "IX_ActiveAgentSessions_AgentId",
                 table: "ActiveAgentSessions",
                 column: "AgentId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ActiveAgentSessions_SessionId",
+                table: "ActiveAgentSessions",
+                column: "SessionId",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Agents_SeniorityId",
@@ -171,6 +191,12 @@ namespace SessionCoordinatorService.Migrations
                 name: "IX_SessionChats_AgentId",
                 table: "SessionChats",
                 column: "AgentId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Teams_Name",
+                table: "Teams",
+                column: "Name",
+                unique: true);
         }
 
         /// <inheritdoc />
@@ -181,6 +207,9 @@ namespace SessionCoordinatorService.Migrations
 
             migrationBuilder.DropTable(
                 name: "SessionChats");
+
+            migrationBuilder.DropTable(
+                name: "SessionQueue");
 
             migrationBuilder.DropTable(
                 name: "Agents");

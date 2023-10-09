@@ -114,7 +114,7 @@ namespace SessionCoordinatorService.Services
                     return null;
                 }
 
-                var currentTimeHour = DateTime.Now.Hour;
+                var currentTimeHour = Helper.GetDefaultDateTime(DateTime.Now.Hour);
 
                 if (currentTimeHour >= overflowTeam.WorkStartHourAt && currentTimeHour < overflowTeam.WorkFinishHourAt) //overflow team can be activated
                 {

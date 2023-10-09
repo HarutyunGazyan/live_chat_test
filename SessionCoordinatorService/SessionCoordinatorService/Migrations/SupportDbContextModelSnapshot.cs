@@ -71,115 +71,115 @@ namespace SessionCoordinatorService.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("3c07e23e-2170-4917-b0d7-289aedbc2655"),
+                            Id = new Guid("7371da25-aed5-4729-83f3-8f019162e247"),
                             Name = "Team_A_Team_Lead",
-                            SeniorityId = new Guid("84392792-84f3-4cac-a551-85dbc7fde1bc"),
-                            TeamId = new Guid("78caa9cf-8cee-483d-a5e1-870cf6d45769")
+                            SeniorityId = new Guid("8a23ef84-55e1-4c52-9fa2-20479c9bec0e"),
+                            TeamId = new Guid("d3287426-98f0-4d8a-9588-0f44c19f0b2c")
                         },
                         new
                         {
-                            Id = new Guid("0379fba9-efc3-4035-a1d1-5619a3fe0ac7"),
+                            Id = new Guid("af177e89-a80a-42a2-99f4-bc0526948ae9"),
                             Name = "Team_A_Mid_1",
-                            SeniorityId = new Guid("825c8c5e-c290-4603-b973-d2f8b2e6d533"),
-                            TeamId = new Guid("78caa9cf-8cee-483d-a5e1-870cf6d45769")
+                            SeniorityId = new Guid("6d4d0945-4b98-40b3-a24e-daad2096b837"),
+                            TeamId = new Guid("d3287426-98f0-4d8a-9588-0f44c19f0b2c")
                         },
                         new
                         {
-                            Id = new Guid("869b4af1-af1e-48d5-8e86-f10a00894337"),
+                            Id = new Guid("bec11bf9-03f0-4ee4-aa0e-9bc7f389ba94"),
                             Name = "Team_A_Mid_2",
-                            SeniorityId = new Guid("825c8c5e-c290-4603-b973-d2f8b2e6d533"),
-                            TeamId = new Guid("78caa9cf-8cee-483d-a5e1-870cf6d45769")
+                            SeniorityId = new Guid("6d4d0945-4b98-40b3-a24e-daad2096b837"),
+                            TeamId = new Guid("d3287426-98f0-4d8a-9588-0f44c19f0b2c")
                         },
                         new
                         {
-                            Id = new Guid("640e3839-c013-4d3c-b3bc-35df63f80656"),
+                            Id = new Guid("6ac6422a-8175-45f1-9e2d-b26795ef159a"),
                             Name = "Team_A_Junior",
-                            SeniorityId = new Guid("50112afc-d878-444d-abaf-34632427debd"),
-                            TeamId = new Guid("78caa9cf-8cee-483d-a5e1-870cf6d45769")
+                            SeniorityId = new Guid("cd80aec0-73e7-4fb9-8c17-81e53724a380"),
+                            TeamId = new Guid("d3287426-98f0-4d8a-9588-0f44c19f0b2c")
                         },
                         new
                         {
-                            Id = new Guid("b19355b4-4581-4a10-93a4-567b0c136071"),
+                            Id = new Guid("fae50fbb-5940-4981-beb3-863086e1c127"),
                             Name = "Team_B_Senior",
-                            SeniorityId = new Guid("ffe91256-3a1a-4a1e-a5b2-cdbbf4848e14"),
-                            TeamId = new Guid("28264979-69cc-4414-9d8f-cf1360ebe471")
+                            SeniorityId = new Guid("705e8762-21c4-445c-b400-8197b864c10b"),
+                            TeamId = new Guid("53dbdf96-52fc-4ead-86d5-8216705572ba")
                         },
                         new
                         {
-                            Id = new Guid("50170ebd-b209-4ae4-bbad-a910d1f4dcde"),
+                            Id = new Guid("d772fa06-b498-4f6d-a76a-d309d4b12e77"),
                             Name = "Team_B_Mid",
-                            SeniorityId = new Guid("825c8c5e-c290-4603-b973-d2f8b2e6d533"),
-                            TeamId = new Guid("28264979-69cc-4414-9d8f-cf1360ebe471")
+                            SeniorityId = new Guid("6d4d0945-4b98-40b3-a24e-daad2096b837"),
+                            TeamId = new Guid("53dbdf96-52fc-4ead-86d5-8216705572ba")
                         },
                         new
                         {
-                            Id = new Guid("67c4d886-35c1-4ec6-934b-b65e2191a47a"),
+                            Id = new Guid("95bf41de-d41e-45b7-8ad7-96cc659f69bf"),
                             Name = "Team_B_Junior_1",
-                            SeniorityId = new Guid("50112afc-d878-444d-abaf-34632427debd"),
-                            TeamId = new Guid("28264979-69cc-4414-9d8f-cf1360ebe471")
+                            SeniorityId = new Guid("cd80aec0-73e7-4fb9-8c17-81e53724a380"),
+                            TeamId = new Guid("53dbdf96-52fc-4ead-86d5-8216705572ba")
                         },
                         new
                         {
-                            Id = new Guid("49421c5d-df31-40a2-a9c6-896b8aae937f"),
+                            Id = new Guid("9c8b506b-03c6-4b38-a943-3299ea11e27d"),
                             Name = "Team_B_Junior_2",
-                            SeniorityId = new Guid("50112afc-d878-444d-abaf-34632427debd"),
-                            TeamId = new Guid("28264979-69cc-4414-9d8f-cf1360ebe471")
+                            SeniorityId = new Guid("cd80aec0-73e7-4fb9-8c17-81e53724a380"),
+                            TeamId = new Guid("53dbdf96-52fc-4ead-86d5-8216705572ba")
                         },
                         new
                         {
-                            Id = new Guid("b96dd648-2835-43b9-8c19-9d5aecd6acec"),
+                            Id = new Guid("68546cd7-c67b-43f6-9414-8ed0d3c18f70"),
                             Name = "Team_C_Mid_1",
-                            SeniorityId = new Guid("825c8c5e-c290-4603-b973-d2f8b2e6d533"),
-                            TeamId = new Guid("13cbf644-e1ae-4106-b480-c5a9ac5c8320")
+                            SeniorityId = new Guid("6d4d0945-4b98-40b3-a24e-daad2096b837"),
+                            TeamId = new Guid("da3659ba-a6ff-471a-8ec1-f7b819e22447")
                         },
                         new
                         {
-                            Id = new Guid("278020aa-6b9b-4b35-8ed3-8ffdefde508d"),
+                            Id = new Guid("92766907-c000-46e1-8a8f-afe49a5ae43b"),
                             Name = "Team_C_Mid_2",
-                            SeniorityId = new Guid("825c8c5e-c290-4603-b973-d2f8b2e6d533"),
-                            TeamId = new Guid("13cbf644-e1ae-4106-b480-c5a9ac5c8320")
+                            SeniorityId = new Guid("6d4d0945-4b98-40b3-a24e-daad2096b837"),
+                            TeamId = new Guid("da3659ba-a6ff-471a-8ec1-f7b819e22447")
                         },
                         new
                         {
-                            Id = new Guid("02d30124-ede3-48f5-97cb-203c8a370ce8"),
+                            Id = new Guid("7db9b214-98fd-4704-befe-ccb2c30d3a58"),
                             Name = "Team_Overflow_Junior_1",
-                            SeniorityId = new Guid("50112afc-d878-444d-abaf-34632427debd"),
-                            TeamId = new Guid("768e2812-8644-4be4-8ce6-8203d79231f4")
+                            SeniorityId = new Guid("cd80aec0-73e7-4fb9-8c17-81e53724a380"),
+                            TeamId = new Guid("d75db702-3633-4429-b34e-37562ec568cb")
                         },
                         new
                         {
-                            Id = new Guid("ea5257d4-62e1-4fd5-b5e8-778d6e0013fc"),
+                            Id = new Guid("25a4831c-57fe-4ffe-b2c1-e8665790e4f8"),
                             Name = "Team_Overflow_Junior_2",
-                            SeniorityId = new Guid("50112afc-d878-444d-abaf-34632427debd"),
-                            TeamId = new Guid("768e2812-8644-4be4-8ce6-8203d79231f4")
+                            SeniorityId = new Guid("cd80aec0-73e7-4fb9-8c17-81e53724a380"),
+                            TeamId = new Guid("d75db702-3633-4429-b34e-37562ec568cb")
                         },
                         new
                         {
-                            Id = new Guid("8c5d7430-da66-4afe-bab9-ffe3399ab594"),
+                            Id = new Guid("2ef99b7d-2381-4ff0-98a7-5fee8b1bb8c6"),
                             Name = "Team_Overflow_Junior_3",
-                            SeniorityId = new Guid("50112afc-d878-444d-abaf-34632427debd"),
-                            TeamId = new Guid("768e2812-8644-4be4-8ce6-8203d79231f4")
+                            SeniorityId = new Guid("cd80aec0-73e7-4fb9-8c17-81e53724a380"),
+                            TeamId = new Guid("d75db702-3633-4429-b34e-37562ec568cb")
                         },
                         new
                         {
-                            Id = new Guid("0e308e43-49ba-4bf3-a9a4-22c9a395c4fa"),
+                            Id = new Guid("677bfb2e-1115-4e9d-ad0e-1933aa4cf772"),
                             Name = "Team_Overflow_Junior_4",
-                            SeniorityId = new Guid("50112afc-d878-444d-abaf-34632427debd"),
-                            TeamId = new Guid("768e2812-8644-4be4-8ce6-8203d79231f4")
+                            SeniorityId = new Guid("cd80aec0-73e7-4fb9-8c17-81e53724a380"),
+                            TeamId = new Guid("d75db702-3633-4429-b34e-37562ec568cb")
                         },
                         new
                         {
-                            Id = new Guid("55799113-9116-4009-8897-c6a41fb743de"),
+                            Id = new Guid("d51a1572-87e6-452e-8ea7-2bc6951c6ab6"),
                             Name = "Team_Overflow_Junior_5",
-                            SeniorityId = new Guid("50112afc-d878-444d-abaf-34632427debd"),
-                            TeamId = new Guid("768e2812-8644-4be4-8ce6-8203d79231f4")
+                            SeniorityId = new Guid("cd80aec0-73e7-4fb9-8c17-81e53724a380"),
+                            TeamId = new Guid("d75db702-3633-4429-b34e-37562ec568cb")
                         },
                         new
                         {
-                            Id = new Guid("f633e091-efb0-4a99-b529-4eb511d35dfe"),
+                            Id = new Guid("9d1c5486-c3bd-4474-8e14-aa88f3bfb035"),
                             Name = "Team_Overflow_Junior_6",
-                            SeniorityId = new Guid("50112afc-d878-444d-abaf-34632427debd"),
-                            TeamId = new Guid("768e2812-8644-4be4-8ce6-8203d79231f4")
+                            SeniorityId = new Guid("cd80aec0-73e7-4fb9-8c17-81e53724a380"),
+                            TeamId = new Guid("d75db702-3633-4429-b34e-37562ec568cb")
                         });
                 });
 
@@ -206,28 +206,28 @@ namespace SessionCoordinatorService.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("50112afc-d878-444d-abaf-34632427debd"),
+                            Id = new Guid("cd80aec0-73e7-4fb9-8c17-81e53724a380"),
                             Name = "Junior",
                             Priority = 1,
                             SeniorityMultiplier = 4
                         },
                         new
                         {
-                            Id = new Guid("825c8c5e-c290-4603-b973-d2f8b2e6d533"),
+                            Id = new Guid("6d4d0945-4b98-40b3-a24e-daad2096b837"),
                             Name = "Mid-Level",
                             Priority = 2,
                             SeniorityMultiplier = 6
                         },
                         new
                         {
-                            Id = new Guid("ffe91256-3a1a-4a1e-a5b2-cdbbf4848e14"),
+                            Id = new Guid("705e8762-21c4-445c-b400-8197b864c10b"),
                             Name = "Senior",
                             Priority = 3,
                             SeniorityMultiplier = 8
                         },
                         new
                         {
-                            Id = new Guid("84392792-84f3-4cac-a551-85dbc7fde1bc"),
+                            Id = new Guid("8a23ef84-55e1-4c52-9fa2-20479c9bec0e"),
                             Name = "Team Lead",
                             Priority = 4,
                             SeniorityMultiplier = 5
@@ -289,50 +289,53 @@ namespace SessionCoordinatorService.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
-                    b.Property<int>("WorkFinishHourAt")
-                        .HasColumnType("int");
+                    b.Property<DateTime>("WorkFinishHourAt")
+                        .HasColumnType("datetime2");
 
-                    b.Property<int>("WorkStartHourAt")
-                        .HasColumnType("int");
+                    b.Property<DateTime>("WorkStartHourAt")
+                        .HasColumnType("datetime2");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("Name")
+                        .IsUnique();
 
                     b.ToTable("Teams");
 
                     b.HasData(
                         new
                         {
-                            Id = new Guid("78caa9cf-8cee-483d-a5e1-870cf6d45769"),
+                            Id = new Guid("d3287426-98f0-4d8a-9588-0f44c19f0b2c"),
                             Active = true,
                             Name = "A",
-                            WorkFinishHourAt = 18,
-                            WorkStartHourAt = 10
+                            WorkFinishHourAt = new DateTime(1, 1, 1, 18, 1, 1, 0, DateTimeKind.Unspecified),
+                            WorkStartHourAt = new DateTime(1, 1, 1, 10, 1, 1, 0, DateTimeKind.Unspecified)
                         },
                         new
                         {
-                            Id = new Guid("28264979-69cc-4414-9d8f-cf1360ebe471"),
+                            Id = new Guid("53dbdf96-52fc-4ead-86d5-8216705572ba"),
                             Active = true,
                             Name = "B",
-                            WorkFinishHourAt = 2,
-                            WorkStartHourAt = 18
+                            WorkFinishHourAt = new DateTime(1, 1, 2, 2, 1, 1, 0, DateTimeKind.Unspecified),
+                            WorkStartHourAt = new DateTime(1, 1, 1, 18, 1, 1, 0, DateTimeKind.Unspecified)
                         },
                         new
                         {
-                            Id = new Guid("13cbf644-e1ae-4106-b480-c5a9ac5c8320"),
+                            Id = new Guid("da3659ba-a6ff-471a-8ec1-f7b819e22447"),
                             Active = true,
                             Name = "C",
-                            WorkFinishHourAt = 10,
-                            WorkStartHourAt = 2
+                            WorkFinishHourAt = new DateTime(1, 1, 1, 10, 1, 1, 0, DateTimeKind.Unspecified),
+                            WorkStartHourAt = new DateTime(1, 1, 1, 2, 1, 1, 0, DateTimeKind.Unspecified)
                         },
                         new
                         {
-                            Id = new Guid("768e2812-8644-4be4-8ce6-8203d79231f4"),
+                            Id = new Guid("d75db702-3633-4429-b34e-37562ec568cb"),
                             Active = false,
                             Name = "Overflow",
-                            WorkFinishHourAt = 18,
-                            WorkStartHourAt = 10
+                            WorkFinishHourAt = new DateTime(1, 1, 1, 18, 1, 1, 0, DateTimeKind.Unspecified),
+                            WorkStartHourAt = new DateTime(1, 1, 1, 10, 1, 1, 0, DateTimeKind.Unspecified)
                         });
                 });
 

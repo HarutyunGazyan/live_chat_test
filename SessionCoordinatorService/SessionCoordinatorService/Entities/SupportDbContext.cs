@@ -33,6 +33,7 @@ namespace SessionCoordinatorService.Entities
                 .HasForeignKey(x => x.AgentId);
 
             modelBuilder.Entity<ActiveAgentSession>(x => x.HasIndex(y => y.SessionId).IsUnique());
+            modelBuilder.Entity<Team>(x => x.HasIndex(y => y.Name).IsUnique());
 
             modelBuilder.Entity<AgentSeniority>().HasData(_agentSenioritiesSeed);
             modelBuilder.Entity<Team>().HasData(_teamsSeed);
@@ -88,32 +89,32 @@ namespace SessionCoordinatorService.Entities
             {
                 Id = teamA,
                 Name = "A",
-                WorkStartHourAt = 10,
-                WorkFinishHourAt = 18,
+                WorkStartHourAt = Helper.GetDefaultDateTime(10),
+                WorkFinishHourAt = Helper.GetDefaultDateTime(18),
                 Active = true
             },
             new Team
             {
                 Id = teamB,
                 Name = "B",
-                WorkStartHourAt = 18,
-                WorkFinishHourAt = 2,
+                WorkStartHourAt = Helper.GetDefaultDateTime(18),
+                WorkFinishHourAt = new DateTime(1, 1, 2, 2, 1, 1, 0, DateTimeKind.Unspecified),
                 Active = true
             },
             new Team
             {
                 Id = teamC,
                 Name = "C",
-                WorkStartHourAt = 2,
-                WorkFinishHourAt = 10,
+                WorkStartHourAt = Helper.GetDefaultDateTime(2),
+                WorkFinishHourAt = Helper.GetDefaultDateTime(10),
                 Active = true
             },
             new Team
             {
                 Id = teamOverflow,
                 Name = Constants.OverflowTeamName,
-                WorkStartHourAt = 10,
-                WorkFinishHourAt = 18,
+                WorkStartHourAt = Helper.GetDefaultDateTime(10),
+                WorkFinishHourAt = Helper.GetDefaultDateTime(18),
                 Active = false
             },
         };
