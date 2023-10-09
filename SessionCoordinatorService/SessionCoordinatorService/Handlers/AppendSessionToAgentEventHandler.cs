@@ -15,7 +15,7 @@ namespace SessionCoordinatorService.Handlers
 
         public async Task<bool> Handle(MonitorSessionQueueEvent @event)
         {
-            return await _sessionManagementService.AppendToAgent(@event.SessionId);
+            return await _sessionManagementService.AppendToAgent();
         }
     }
 }

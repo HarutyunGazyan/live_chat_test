@@ -31,7 +31,8 @@ builder.Services.AddEventBus(
 
 builder.Services.AddTransient<IIntegrationEventHandler<MonitorSessionQueueEvent>, AppendSessionToAgentEventHandler>();
 builder.Services.AddTransient<IIntegrationEventHandler<SessionCancelledEvent>, SessionCancelledEventHandler>();
-builder.Services.AddTransient<ISupportRepository, SessionRepository>(); 
+builder.Services.AddTransient<ISupportRepository, SupportRepository>();
+builder.Services.AddTransient<ITranasctionProviderRepository, TranasctionProviderRepository>();
 builder.Services.AddTransient<SessionManagementService>();
 
 var app = builder.Build();
