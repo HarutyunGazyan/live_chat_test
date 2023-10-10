@@ -20,7 +20,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Shared.Lib\Support.Shared.Lib.csproj" />
+    <ProjectReference Include="..\Support.Shared.Lib\Support.Shared.Lib.csproj" />
   </ItemGroup>
 
 </Project>
