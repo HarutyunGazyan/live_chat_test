@@ -2,12 +2,12 @@
 using API.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using MongoDB.Bson.IO;
 using MongoDB.Driver;
 using Shared.Library.DTOs;
 using Shared.Library.Entities;
+using Shared.Library.EventBus.Abstractions;
+using Shared.Library.EventBus.Events;
 using Shared.Library.Extensions;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace API.Controllers
 {
@@ -17,19 +17,21 @@ namespace API.Controllers
     {
         private readonly SessionService _sessionService;
         private readonly SupportDbContext _supportDbContext;
-        private readonly HttpClient _httpClient;
+        private readonly IEventBus _eventBus;
+        private readonly IHttpClientFactory _httpClientFactory;
 
-        public ChatController(SessionService sessionService, IHttpClientFactory httpClientFactory, SupportDbContext supportDbContext)
+        public ChatController(SessionService sessionService, IHttpClientFactory httpClientFactory, SupportDbContext supportDbContext, IEventBus eventBus)
         {
             _sessionService = sessionService;
             _supportDbContext = supportDbContext;
-            _httpClient = httpClientFactory.CreateClient();
+            _eventBus = eventBus;
+            _httpClientFactory = httpClientFactory;
         }
 
         [HttpPost(nameof(Start))]
         public async Task<IActionResult> Start()
         {
-            var httpResponseMessage = await _httpClient.PostAsync("https://localhost:7010/Session/Create", null);
+            var httpResponseMessage = await _httpClientFactory.CreateClient().PostAsync("https://localhost:7010/Session/Create", null);
 
             if (!httpResponseMessage.IsSuccessStatusCode)
             {
@@ -125,6 +127,14 @@ namespace API.Controllers
 
             await _supportDbContext.SessionChats.AddAsync(message);
             await _supportDbContext.SaveChangesAsync();
+
+            return Ok();
+        }
+
+        [HttpDelete(nameof(CancellSession))]
+        public async Task<IActionResult> CancellSession(CancellSessionRequest request)
+        {
+            _eventBus.Publish(new SessionCancelledEvent { SessionId = request.SessionId, CancelledBy = request.AgentId?.ToString() ?? "Client" });
 
             return Ok();
         }

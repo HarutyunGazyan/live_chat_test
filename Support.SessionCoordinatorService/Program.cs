@@ -85,20 +85,10 @@ app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
-
-
-try
+app.UseEventBus(eventBus =>
 {
-    app.UseEventBus(eventBus =>
-    {
-        eventBus.Subscribe<SessionGeneratedEvent, IIntegrationEventHandler<SessionGeneratedEvent>>();
-        eventBus.Subscribe<SessionCancelledEvent, IIntegrationEventHandler<SessionCancelledEvent>>();
-        eventBus.Publish(new SessionGeneratedEvent());
-    });
-}
-catch (Exception ex)
-{
-
-}
+    eventBus.Subscribe<SessionGeneratedEvent, IIntegrationEventHandler<SessionGeneratedEvent>>();
+    eventBus.Subscribe<SessionCancelledEvent, IIntegrationEventHandler<SessionCancelledEvent>>();
+});
 
 app.Run();

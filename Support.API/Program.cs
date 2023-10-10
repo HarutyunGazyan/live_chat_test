@@ -1,6 +1,7 @@
 using API.Services;
 using Microsoft.EntityFrameworkCore;
 using Shared.Library.Entities;
+using Shared.Library.EventBus.RabbitMQ.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration
@@ -18,7 +19,13 @@ builder.Services.AddDbContext<SupportDbContext>(options =>
 
 builder.Services.AddSingleton<SessionService>();
 builder.Services.AddHttpClient();
-
+builder.Services.AddEventBus(
+    new EventBusRabbitMQOptions
+    {
+        EventBusRetryCount = configuration.GetSection("RabbitMQRetryCount").Get<int>(),
+        HostName = configuration.GetSection("RabbitMQConnection").Value
+    }
+);
 var app = builder.Build();
 
 if (!app.Environment.IsDevelopment())
