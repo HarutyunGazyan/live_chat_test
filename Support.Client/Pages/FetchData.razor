@@ -1,0 +1,46 @@
+﻿@page "/"
+@inject HttpClient Http
+
+<PageTitle>Support Chat</PageTitle>
+
+<h1>Start Support Chat</h1>
+
+
+<button class="btn btn-primary" @onclick="StartChat">Start Chat</button>
+
+
+@code {
+    private SessionCreatedResponse sessionCreatedResponse;
+    private System.Threading.Timer? timer;
+    private List<PollResponse> messages;
+
+    protected async Task StartChat()
+    {
+        using var response = await Http.PostAsJsonAsync<object>("https://localhost:7258/api/chat/start", new object { });
+
+        sessionCreatedResponse = await response.Content.ReadFromJsonAsync<SessionCreatedResponse>();
+        await StartPolling(sessionCreatedResponse.SessionId);
+    }
+
+    protected async Task StartPolling(Guid sessionId)
+    {
+        timer = new System.Threading.Timer(async (object? stateInfo) =>
+        {
+            messages = await Http.GetFromJsonAsync<List<PollResponse>>($"https://localhost:7258/api/chat/poll?sessionId={sessionId.ToString()}");
+            StateHasChanged(); 
+        }, new System.Threading.AutoResetEvent(false), 2000, 1000); // fire every 2000 milliseconds
+    }
+
+    public class SessionCreatedResponse
+    {
+        public Guid SessionId { get; set; }
+    }
+
+    public class PollResponse
+    {
+        public string AgentName { get; set; }
+        public string SentBy { get; set; }
+        public DateTime SentAt { get; set; }
+        public string MessageBody { get; set; }
+    }
+}

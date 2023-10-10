@@ -25,16 +25,16 @@ namespace SessionCoordinatorService.Services
         {
             try
             {
-                var agentSession = await _supportRepository.GetActiveAgentSession(sessionId);
+                var agentSession = await _supportRepository.GetActiveAgentSessionAsync(sessionId);
                 if (agentSession != null)
                 {
-                    await _supportRepository.DeleteActiveAgentSession(agentSession);
+                    await _supportRepository.DeleteActiveAgentSessionAsync(agentSession);
                 }
 
-                var session = await _supportRepository.GetSessionById(sessionId);
+                var session = await _supportRepository.GetSessionByIdAsync(sessionId);
                 if (session != null)
                 {
-                    await _supportRepository.RemoveFromSessionQueue(session);
+                    await _supportRepository.DeleteFromSessionQueueAsync(session);
                 }
                 return true;
             }
@@ -47,7 +47,7 @@ namespace SessionCoordinatorService.Services
 
         public async Task DeactivateOverflowTeam()//called 1 per day via quatrz
         {
-            var overflowTeam = await _supportRepository.GetOverflowTeam();
+            var overflowTeam = await _supportRepository.GetOverflowTeamAsync();
             if (overflowTeam.Active)
             {
                 overflowTeam.Active = false;
@@ -61,7 +61,7 @@ namespace SessionCoordinatorService.Services
 
             try
             {
-                var sessions = await _supportRepository.GetOrderedSessionQueue();
+                var sessions = await _supportRepository.GetOrderedSessionQueueAsync();
                 if (!sessions.Any())
                 {
                     return true; //in this case the sessions have been already assigned (may be by another instance) so we are respoding with true to "ack" the rabbitMQ message
@@ -71,15 +71,15 @@ namespace SessionCoordinatorService.Services
                 {
                     transaction = await _tranasctionProviderRepository.BeginTransaction();
 
-                    var agent = await _supportRepository.GetAgentWithCapacity();
+                    var agent = await _supportRepository.GetAgentWithCapacityAsync();
 
                     if (agent == null)
                     {
                         break;
                     }
 
-                    await _supportRepository.AddActiveAgentSession(new ActiveAgentSession { AgentId = agent.Id, SessionId = session.Id, Id = Guid.NewGuid() });
-                    await _supportRepository.RemoveFromSessionQueue(session);
+                    await _supportRepository.AddActiveAgentSessionAsync(new ActiveAgentSession { AgentId = agent.Id, SessionId = session.Id, Id = Guid.NewGuid() });
+                    await _supportRepository.DeleteFromSessionQueueAsync(session);
                     
                     await _tranasctionProviderRepository.CommitTransaction(transaction);
 
@@ -109,8 +109,8 @@ namespace SessionCoordinatorService.Services
 
         public async Task<Guid?> GenerateSession()
         {
-            var activeTeams = await _supportRepository.GetActiveTeams();
-            int queueLength = await _supportRepository.GetSessionQueueCount();
+            var activeTeams = await _supportRepository.GetActiveTeamsAsync();
+            int queueLength = await _supportRepository.GetSessionQueueCountAsync();
 
             if (!CanBeQueued(GetTeamCapacity(activeTeams), queueLength))//max queue capacity reached
             {
@@ -120,7 +120,7 @@ namespace SessionCoordinatorService.Services
                     return null;
                 }
 
-                overflowTeam = await _supportRepository.GetOverflowTeam();
+                overflowTeam = await _supportRepository.GetOverflowTeamAsync();
 
                 if (overflowTeam == null) //overflow team doesn't exist in db
                 {
@@ -135,8 +135,8 @@ namespace SessionCoordinatorService.Services
                 {
                     await ActivateTeam(overflowTeam);
 
-                    activeTeams = await _supportRepository.GetActiveTeams(); //refreshing in case if other instances already occupied overflow agents
-                    queueLength = await _supportRepository.GetSessionQueueCount();
+                    activeTeams = await _supportRepository.GetActiveTeamsAsync(); //refreshing in case if other instances already occupied overflow agents
+                    queueLength = await _supportRepository.GetSessionQueueCountAsync();
 
                     if (!CanBeQueued(GetTeamCapacity(activeTeams), queueLength))//other instances already occupied overflow agents
                     {
@@ -179,9 +179,9 @@ namespace SessionCoordinatorService.Services
         {
             var sessionId = Guid.NewGuid();
 
-            await _supportRepository.AddToSessionQueue(new SessionQueueItem { CreatedAt = DateTime.Now, Id = sessionId });
+            await _supportRepository.AddToSessionQueueAsync(new SessionQueueItem { CreatedAt = DateTime.Now, Id = sessionId });
 
-            _eventBus.Publish(new SessionGeneratedEvent { SessionId = sessionId });
+            _eventBus.Publish(new AppendSessionsToAgentEvent());
 
             return sessionId;
         }

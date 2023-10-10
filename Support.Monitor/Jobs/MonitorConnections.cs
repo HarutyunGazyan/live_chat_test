@@ -2,6 +2,7 @@
 using Quartz;
 using Shared.Library.EventBus.Abstractions;
 using Shared.Library.EventBus.Events;
+using Shared.Library.Services;
 
 namespace Monitor.Jobs
 {
@@ -19,12 +20,15 @@ namespace Monitor.Jobs
         {
             var sessionsToCancell = await _connectionService.sessionCollection.Find(x => x.ExpireAt < DateTime.UtcNow).ToListAsync();
 
-            foreach (var session in sessionsToCancell)
+            if(sessionsToCancell.Any())
             {
-                _eventBus.Publish(new SessionCancelledEvent { SessionId = session.Id });
-            }
+                foreach (var session in sessionsToCancell)
+                {
+                    _eventBus.Publish(new SessionCancelledEvent { SessionId = session.Id });
+                }
 
-            await _connectionService.sessionCollection.DeleteManyAsync(x => sessionsToCancell.Select(x => x.Id).Contains(x.Id));
+                await _connectionService.sessionCollection.DeleteManyAsync(x => sessionsToCancell.Select(x => x.Id).Contains(x.Id));
+            }
         }
     }
 }

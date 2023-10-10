@@ -14,33 +14,33 @@ namespace SessionCoordinatorService.Repositories
             _dbContext = dbContext;
         }
 
-        public async Task AddActiveAgentSession(ActiveAgentSession activeAgentSession)
+        public async Task AddActiveAgentSessionAsync(ActiveAgentSession activeAgentSession)
         {
             await _dbContext.ActiveAgentSessions.AddRangeAsync(activeAgentSession);
 
             await _dbContext.SaveChangesAsync();
         }
 
-        public async Task AddToSessionQueue(SessionQueueItem sessionQueue)
+        public async Task AddToSessionQueueAsync(SessionQueueItem sessionQueue)
         {
             await _dbContext.SessionQueue.AddAsync(sessionQueue);
 
             await _dbContext.SaveChangesAsync();
         }
 
-        public async Task DeleteActiveAgentSession(ActiveAgentSession session)
+        public async Task DeleteActiveAgentSessionAsync(ActiveAgentSession session)
         {
             _dbContext.ActiveAgentSessions.Remove(session);
 
             await _dbContext.SaveChangesAsync();
         }
 
-        public async Task<ActiveAgentSession> GetActiveAgentSession(Guid sessionId)
+        public async Task<ActiveAgentSession> GetActiveAgentSessionAsync(Guid sessionId)
         {
             return await _dbContext.ActiveAgentSessions.SingleOrDefaultAsync(x => x.SessionId == sessionId);
         }
 
-        public async Task<List<Team>> GetActiveTeams()
+        public async Task<List<Team>> GetActiveTeamsAsync()
         {
             var currentTimeHour = Helper.GetDefaultDateTime(DateTime.Now.Hour);
             var currentTimeHourAtNextDay = currentTimeHour.AddDays(1);
@@ -50,7 +50,7 @@ namespace SessionCoordinatorService.Repositories
                             .ThenInclude(x => x.ActiveAgentSessions)
                          .Include(x => x.Agents)
                             .ThenInclude(x => x.Seniority)
-                         .Where(x =>x.Active &&
+                         .Where(x => x.Active &&
                                     (
                                         (x.WorkStartHourAt <= currentTimeHour && x.WorkFinishHourAt > currentTimeHour) ||
                                         (x.WorkStartHourAt <= currentTimeHourAtNextDay && x.WorkFinishHourAt > currentTimeHourAtNextDay)
@@ -59,7 +59,7 @@ namespace SessionCoordinatorService.Repositories
                          .ToListAsync();
         }
 
-        public async Task<Agent> GetAgentWithCapacity()
+        public async Task<Agent> GetAgentWithCapacityAsync()
         {
             var currentTimeHour = Helper.GetDefaultDateTime(DateTime.Now.Hour);
             var currentTimeHourAtNextDay = currentTimeHour.AddDays(1);
@@ -68,21 +68,21 @@ namespace SessionCoordinatorService.Repositories
                             .Include(x => x.Team)
                             .Include(x => x.ActiveAgentSessions)
                             .Include(x => x.Seniority) //making sure to keep lower seniority agetns busy
-                            .Where(x =>x.ActiveAgentSessions.Count < x.Seniority.SeniorityMultiplier &&
+                            .Where(x => x.ActiveAgentSessions.Count < x.Seniority.SeniorityMultiplier &&
                                        x.Team.Active &&
                                        (
-                                           (x.Team.WorkStartHourAt <= currentTimeHour && x.Team.WorkFinishHourAt > currentTimeHour)||
+                                           (x.Team.WorkStartHourAt <= currentTimeHour && x.Team.WorkFinishHourAt > currentTimeHour) ||
                                            (x.Team.WorkStartHourAt <= currentTimeHourAtNextDay && x.Team.WorkFinishHourAt > currentTimeHourAtNextDay)
                                        )
                                    )
                             .GroupBy(x => x.Seniority.Priority)
                             .OrderBy(x => x.Key)
-                            .Select(x=>x.OrderBy(y=>y.ActiveAgentSessions.Count).FirstOrDefault())
+                            .Select(x => x.OrderBy(y => y.ActiveAgentSessions.Count).FirstOrDefault())
                             .FirstOrDefaultAsync();
             return agent;
         }
 
-        public async Task<Team> GetOverflowTeam()
+        public async Task<Team> GetOverflowTeamAsync()
         {
             return await _dbContext.Teams
                          .Include(x => x.Agents)
@@ -93,17 +93,17 @@ namespace SessionCoordinatorService.Repositories
 
         }
 
-        public async Task<List<SessionQueueItem>> GetOrderedSessionQueue()
+        public async Task<List<SessionQueueItem>> GetOrderedSessionQueueAsync()
         {
             return await _dbContext.SessionQueue.OrderBy(x => x.CreatedAt).ToListAsync();
         }
 
-        public async Task<int> GetSessionQueueCount()
+        public async Task<int> GetSessionQueueCountAsync()
         {
             return await _dbContext.SessionQueue.CountAsync();
         }
 
-        public async Task RemoveFromSessionQueue(SessionQueueItem sessionToRemove)
+        public async Task DeleteFromSessionQueueAsync(SessionQueueItem sessionToRemove)
         {
             _dbContext.SessionQueue.RemoveRange(sessionToRemove);
 
@@ -116,9 +116,26 @@ namespace SessionCoordinatorService.Repositories
             await _dbContext.SaveChangesAsync();
         }
 
-        public async Task<SessionQueueItem> GetSessionById(Guid sessionId)
+        public async Task<SessionQueueItem> GetSessionByIdAsync(Guid sessionId)
         {
             return await _dbContext.SessionQueue.FirstOrDefaultAsync(x => x.Id == sessionId);
+        }
+
+        public async Task DeleteActiveAgentSessionsAsync(List<ActiveAgentSession> agentSessions)
+        {
+            _dbContext.ActiveAgentSessions.RemoveRange(agentSessions);
+            await _dbContext.SaveChangesAsync();
+        }
+
+        public async Task DeleteFromSessionQueueAsync(List<SessionQueueItem> sessionsToRemove)
+        {
+            _dbContext.SessionQueue.RemoveRange(sessionsToRemove);
+            await _dbContext.SaveChangesAsync();
+        }
+
+        public async Task<List<ActiveAgentSession>> GetActiveAgentSessionsAsync()
+        {
+            return await _dbContext.ActiveAgentSessions.ToListAsync();
         }
     }
 }

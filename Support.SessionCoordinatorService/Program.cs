@@ -8,6 +8,7 @@ using SessionCoordinatorService.Handlers;
 using SessionCoordinatorService.Options;
 using SessionCoordinatorService.Repositories;
 using SessionCoordinatorService.Services;
+using SessionCoordinatorService.Jobs;
 
 var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration
@@ -17,6 +18,7 @@ var configuration = builder.Configuration
  .Build();
 
 builder.Services.AddControllersWithViews();
+builder.Services.AddHttpClient();
 
 builder.Services.AddDbContext<SupportDbContext>(options =>
 {
@@ -31,12 +33,12 @@ builder.Services.AddEventBus(
     }
 );
 
-builder.Services.AddTransient<IIntegrationEventHandler<SessionGeneratedEvent>, SessionGeneratedEventHandler>();
+builder.Services.AddTransient<IIntegrationEventHandler<AppendSessionsToAgentEvent>, AppendSessionsToAgentEventHandler>();
 builder.Services.AddTransient<IIntegrationEventHandler<SessionCancelledEvent>, SessionCancelledEventHandler>();
 builder.Services.AddTransient<ISupportRepository, SupportRepository>();
 builder.Services.AddTransient<ITranasctionProviderRepository, TranasctionProviderRepository>();
 builder.Services.AddTransient<SessionManagementService>();
-builder.Services.AddTransient<ResetOverflowHandler>();
+builder.Services.AddTransient<ResetOverflowJob>();
 
 builder.Services.Configure<MessageBusOptions>(
     builder.Configuration.GetSection("MessageBusOptions"));
@@ -46,7 +48,7 @@ builder.Services.AddQuartz(q =>
     q.UseMicrosoftDependencyInjectionJobFactory();
 
     var jobKey = new JobKey("ResetOverflow");
-    q.AddJob<ResetOverflowHandler>(opts => opts.WithIdentity(jobKey));
+    q.AddJob<ResetOverflowJob>(opts => opts.WithIdentity(jobKey));
 
     q.AddTrigger(opts => opts
         .ForJob(jobKey)
@@ -61,6 +63,13 @@ builder.Services.AddQuartz(q =>
             ))
          ));
 
+
+    var sessionMonitorJob = new JobKey("MonitorSessions");
+    q.AddJob<MonitorSessionsJob>(opts => opts.WithIdentity(sessionMonitorJob));
+    q.AddTrigger(opts => opts
+        .ForJob(sessionMonitorJob)
+        .WithIdentity("MonitorSessions-trigger")
+        .WithCronSchedule("*/10 * * * * ?"));
 });
 builder.Services.AddQuartzHostedService(q => q.WaitForJobsToComplete = true);
 
@@ -87,7 +96,7 @@ app.MapControllerRoute(
 
 app.UseEventBus(eventBus =>
 {
-    eventBus.Subscribe<SessionGeneratedEvent, IIntegrationEventHandler<SessionGeneratedEvent>>();
+    eventBus.Subscribe<AppendSessionsToAgentEvent, IIntegrationEventHandler<AppendSessionsToAgentEvent>>();
     eventBus.Subscribe<SessionCancelledEvent, IIntegrationEventHandler<SessionCancelledEvent>>();
 });
 

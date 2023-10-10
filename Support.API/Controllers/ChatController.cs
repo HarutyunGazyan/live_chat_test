@@ -1,5 +1,4 @@
 ﻿using API.Models;
-using API.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MongoDB.Driver;
@@ -8,6 +7,8 @@ using Shared.Library.Entities;
 using Shared.Library.EventBus.Abstractions;
 using Shared.Library.EventBus.Events;
 using Shared.Library.Extensions;
+using Shared.Library.Services;
+using Shared.Library.Services.Models;
 
 namespace API.Controllers
 {
@@ -15,14 +16,14 @@ namespace API.Controllers
     [ApiController]
     public class ChatController : ControllerBase
     {
-        private readonly SessionService _sessionService;
+        private readonly ConnectionService _connectionService;
         private readonly SupportDbContext _supportDbContext;
         private readonly IEventBus _eventBus;
         private readonly IHttpClientFactory _httpClientFactory;
 
-        public ChatController(SessionService sessionService, IHttpClientFactory httpClientFactory, SupportDbContext supportDbContext, IEventBus eventBus)
+        public ChatController(ConnectionService connectionService, IHttpClientFactory httpClientFactory, SupportDbContext supportDbContext, IEventBus eventBus)
         {
-            _sessionService = sessionService;
+            _connectionService = connectionService;
             _supportDbContext = supportDbContext;
             _eventBus = eventBus;
             _httpClientFactory = httpClientFactory;
@@ -44,7 +45,7 @@ namespace API.Controllers
 
             try
             {
-                await _sessionService.sessionCollection.InsertOneAsync(new Session { Id = response.SessionId, ExpireAt = DateTime.UtcNow.AddSeconds(3) });
+                await _connectionService.CreateAsync(new SessionConnection { Id = response.SessionId, ExpireAt = DateTime.UtcNow.AddSeconds(3) });
             }
             catch (Exception ex)
             {
@@ -57,15 +58,15 @@ namespace API.Controllers
         [HttpGet(nameof(Poll))]
         public async Task<IActionResult> Poll(Guid sessionId, DateTime? pullMessagesFrom = null)
         {
-            var value = await _sessionService.sessionCollection.Find(x => x.Id == sessionId).FirstOrDefaultAsync();
+            var value = await _connectionService.GetAsync(sessionId);
             if (value == null)
             {
                 return BadRequest();
             }
 
-            value.ExpireAt = DateTime.UtcNow;
+            value.ExpireAt = DateTime.UtcNow.AddSeconds(3);
 
-            await _sessionService.sessionCollection.ReplaceOneAsync(x => x.Id == sessionId, value);
+            await _connectionService.UpdateAsync(sessionId, value);
 
             var isAppendedToAgent = await _supportDbContext.ActiveAgentSessions.AnyAsync(x => x.SessionId == sessionId);
 

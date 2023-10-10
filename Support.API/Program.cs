@@ -1,7 +1,9 @@
-using API.Services;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using Shared.Library.Entities;
 using Shared.Library.EventBus.RabbitMQ.Extensions;
+using Shared.Library.Services;
+using Support.Shared.Lib.Options;
 
 var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration
@@ -11,13 +13,22 @@ var configuration = builder.Configuration
  .Build();
 
 builder.Services.AddControllersWithViews();
-
+builder.Services.AddCors(opts => opts.AddDefaultPolicy(bld => // <-- added this
+{
+    bld
+        .AllowAnyOrigin()
+        .AllowAnyMethod()
+        .AllowAnyHeader()
+        .WithExposedHeaders("*")
+    ;
+}));
 builder.Services.AddDbContext<SupportDbContext>(options =>
 {
     options.UseSqlServer(configuration.GetSection("DatabaseUrl").Value);
 });
 
-builder.Services.AddSingleton<SessionService>();
+builder.Services.Configure<MongoDbOptions>(configuration.GetSection("MongoDbOptions"));
+builder.Services.AddSingleton<ConnectionService>();
 builder.Services.AddHttpClient();
 builder.Services.AddEventBus(
     new EventBusRabbitMQOptions
@@ -26,6 +37,7 @@ builder.Services.AddEventBus(
         HostName = configuration.GetSection("RabbitMQConnection").Value
     }
 );
+
 var app = builder.Build();
 
 if (!app.Environment.IsDevelopment())
@@ -39,7 +51,7 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
-app.UseAuthorization();
+app.UseCors();
 
 app.MapControllerRoute(
     name: "default",

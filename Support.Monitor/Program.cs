@@ -1,9 +1,9 @@
-using Microsoft.EntityFrameworkCore;
-using Monitor;
+using Microsoft.Extensions.Options;
 using Monitor.Jobs;
 using Quartz;
-using Shared.Library.Entities;
 using Shared.Library.EventBus.RabbitMQ.Extensions;
+using Shared.Library.Services;
+using Support.Shared.Lib.Options;
 
 var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration
@@ -11,6 +11,8 @@ var configuration = builder.Configuration
  .AddJsonFile($"appsettings.json", optional: false)
  .AddEnvironmentVariables()
  .Build();
+
+builder.Services.AddControllersWithViews(); 
 
 builder.Services.AddQuartz(q =>
 {
@@ -21,21 +23,9 @@ builder.Services.AddQuartz(q =>
         .ForJob(connectionMonitorJob)
         .WithIdentity("MonitorConnections-trigger")
         .WithCronSchedule("* * * * * ?"));
-
-
-    var sessionMonitorJob = new JobKey("MonitorSessions");
-    q.AddJob<MonitorSessions>(opts => opts.WithIdentity(sessionMonitorJob));
-    q.AddTrigger(opts => opts
-        .ForJob(sessionMonitorJob)
-        .WithIdentity("MonitorSessions-trigger")
-        .WithCronSchedule("*/10 * * * * ?"));
 });
 
-builder.Services.AddDbContext<SupportDbContext>(options =>
-{
-    options.UseSqlServer(configuration.GetSection("DatabaseUrl").Value);
-});
-
+builder.Services.Configure<MongoDbOptions>(configuration.GetSection("MongoDbOptions"));
 builder.Services.AddSingleton<ConnectionService>();
 
 builder.Services.AddQuartzHostedService(q => q.WaitForJobsToComplete = true);
@@ -50,9 +40,22 @@ builder.Services.AddEventBus(
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+if (!app.Environment.IsDevelopment())
 {
+    app.UseExceptionHandler("/Home/Error");
+    app.UseHsts();
 }
 
+app.UseHttpsRedirection();
+app.UseStaticFiles();
+
+app.UseRouting();
+
+app.UseAuthorization();
+
+app.MapControllerRoute(
+    name: "default",
+    pattern: "{controller=Home}/{action=Index}/{id?}");
+
 app.Run();
+

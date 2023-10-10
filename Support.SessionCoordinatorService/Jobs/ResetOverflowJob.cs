@@ -1,13 +1,13 @@
 ﻿using Quartz;
 using SessionCoordinatorService.Services;
 
-namespace SessionCoordinatorService.Handlers
+namespace SessionCoordinatorService.Jobs
 {
-    public class ResetOverflowHandler : IJob
+    public class ResetOverflowJob : IJob
     {
         private readonly SessionManagementService _sessionManagementService;
 
-        public ResetOverflowHandler(SessionManagementService sessionManagementService)
+        public ResetOverflowJob(SessionManagementService sessionManagementService)
         {
             _sessionManagementService = sessionManagementService;
         }

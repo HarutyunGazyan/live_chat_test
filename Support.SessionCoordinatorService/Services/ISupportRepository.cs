@@ -4,17 +4,20 @@ namespace SessionCoordinatorService.Services
 {
     public interface ISupportRepository
     {
-        Task DeleteActiveAgentSession(ActiveAgentSession session);
-        Task AddActiveAgentSession(ActiveAgentSession activeAgentSession);
-        Task AddToSessionQueue(SessionQueueItem sessionQueue);
-        Task<ActiveAgentSession> GetActiveAgentSession(Guid sessionId);
-        Task<List<Team>> GetActiveTeams();
-        Task<Agent> GetAgentWithCapacity();
-        Task<Team> GetOverflowTeam();
-        Task<List<SessionQueueItem>> GetOrderedSessionQueue();
-        Task<int> GetSessionQueueCount();
-        Task RemoveFromSessionQueue(SessionQueueItem sessionToRemove);
+        Task DeleteActiveAgentSessionAsync(ActiveAgentSession session);
+        Task AddActiveAgentSessionAsync(ActiveAgentSession activeAgentSession);
+        Task AddToSessionQueueAsync(SessionQueueItem sessionQueue);
+        Task<ActiveAgentSession> GetActiveAgentSessionAsync(Guid sessionId);
+        Task<List<Team>> GetActiveTeamsAsync();
+        Task<Agent> GetAgentWithCapacityAsync();
+        Task<Team> GetOverflowTeamAsync();
+        Task<List<SessionQueueItem>> GetOrderedSessionQueueAsync();
+        Task<int> GetSessionQueueCountAsync();
+        Task DeleteFromSessionQueueAsync(SessionQueueItem sessionToRemove);
         Task UpdateTeamAsync(Team team);
-        Task<SessionQueueItem> GetSessionById(Guid sessionId);
+        Task<SessionQueueItem> GetSessionByIdAsync(Guid sessionId);
+        Task DeleteActiveAgentSessionsAsync(List<ActiveAgentSession> agentSessions);
+        Task DeleteFromSessionQueueAsync(List<SessionQueueItem> sessionsToRemove);
+        Task<List<ActiveAgentSession>> GetActiveAgentSessionsAsync();
     }
 }

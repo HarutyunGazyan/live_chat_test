@@ -1,6 +1,6 @@
-﻿namespace API.Models
+﻿namespace Shared.Library.Services.Models
 {
-    public class Session
+    public class SessionConnection
     {
         public Guid Id { get; set; }
         public DateTime ExpireAt { get; set; }

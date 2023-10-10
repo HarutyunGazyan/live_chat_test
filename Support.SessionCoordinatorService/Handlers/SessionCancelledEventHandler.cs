@@ -7,16 +7,20 @@ namespace SessionCoordinatorService.Handlers
     public class SessionCancelledEventHandler : IIntegrationEventHandler<SessionCancelledEvent>
     {
         private readonly SessionManagementService _sessionManagementService;
+        private readonly IEventBus _eventBus;
 
-        public SessionCancelledEventHandler(SessionManagementService sessionManagementService)
+        public SessionCancelledEventHandler(SessionManagementService sessionManagementService, IEventBus eventBus)
         {
             _sessionManagementService = sessionManagementService;
+            _eventBus = eventBus;
         }
 
         public async Task<bool> Handle(SessionCancelledEvent @event)
         {
-            return await _sessionManagementService.RemoveSession(@event.SessionId);
+            var result = await _sessionManagementService.RemoveSession(@event.SessionId);
+            _eventBus.Publish(new AppendSessionsToAgentEvent());
 
+            return result;
         }
     }
 }
