@@ -6,12 +6,12 @@ using Shared.Library.Services;
 
 namespace Monitor.Jobs
 {
-    public class MonitorConnections : IJob
+    public class MonitorConnectionsJob : IJob
     {
         private readonly ConnectionService _connectionService;
         private readonly IEventBus _eventBus;
 
-        public MonitorConnections(ConnectionService connectionService, IEventBus eventBus)
+        public MonitorConnectionsJob(ConnectionService connectionService, IEventBus eventBus)
         {
             _connectionService = connectionService;
             _eventBus = eventBus;

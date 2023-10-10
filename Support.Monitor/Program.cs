@@ -18,7 +18,7 @@ builder.Services.AddQuartz(q =>
 {
     q.UseMicrosoftDependencyInjectionJobFactory();
     var connectionMonitorJob = new JobKey("MonitorConnections");
-    q.AddJob<MonitorConnections>(opts => opts.WithIdentity(connectionMonitorJob));
+    q.AddJob<MonitorConnectionsJob>(opts => opts.WithIdentity(connectionMonitorJob));
     q.AddTrigger(opts => opts
         .ForJob(connectionMonitorJob)
         .WithIdentity("MonitorConnections-trigger")

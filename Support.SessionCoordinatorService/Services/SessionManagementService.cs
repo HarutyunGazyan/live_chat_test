@@ -45,7 +45,7 @@ namespace SessionCoordinatorService.Services
             }
         }
 
-        public async Task DeactivateOverflowTeam()//called 1 per day via quatrz
+        public async Task DeactivateOverflowTeam()//called 1 time per day via quatrz
         {
             var overflowTeam = await _supportRepository.GetOverflowTeamAsync();
             if (overflowTeam.Active)
