@@ -75,7 +75,7 @@ namespace SessionCoordinatorService.Services
 
                     if (agent == null)
                     {
-                        break;
+                        return false;
                     }
 
                     await _supportRepository.AddActiveAgentSessionAsync(new ActiveAgentSession { AgentId = agent.Id, SessionId = session.Id, Id = Guid.NewGuid() });
