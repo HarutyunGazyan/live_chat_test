@@ -128,8 +128,10 @@ namespace SessionCoordinatorService.Services
                 }
 
                 var currentTimeHour = Helper.GetDefaultDateTime(DateTime.Now.Hour);
+                var currentTimeHourAtNextDay = currentTimeHour.AddDays(1);
 
-                if (currentTimeHour >= overflowTeam.WorkStartHourAt && currentTimeHour < overflowTeam.WorkFinishHourAt) //overflow team can be activated
+                if ((overflowTeam.WorkStartHourAt <= currentTimeHour && overflowTeam.WorkFinishHourAt > currentTimeHour) ||
+                    (overflowTeam.WorkStartHourAt <= currentTimeHourAtNextDay && overflowTeam.WorkFinishHourAt > currentTimeHourAtNextDay)) //overflow team can be activated
                 {
                     await ActivateTeam(overflowTeam);
 

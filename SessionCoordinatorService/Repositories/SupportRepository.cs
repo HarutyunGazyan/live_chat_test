@@ -42,30 +42,39 @@ namespace SessionCoordinatorService.Repositories
 
         public async Task<List<Team>> GetActiveTeams()
         {
-            var currentTimeHour = Helper.GetDefaultDateTime(DateTime.Now.Hour);//TODO fix bug with a next day
+            var currentTimeHour = Helper.GetDefaultDateTime(DateTime.Now.Hour);
+            var currentTimeHourAtNextDay = currentTimeHour.AddDays(1);
 
             return await _dbContext.Teams
                          .Include(x => x.Agents)
                             .ThenInclude(x => x.ActiveAgentSessions)
                          .Include(x => x.Agents)
                             .ThenInclude(x => x.Seniority)
-                         .Where(x => x.WorkStartHourAt <= currentTimeHour && x.WorkFinishHourAt > currentTimeHour && x.Active)
+                         .Where(x =>x.Active &&
+                                    (
+                                        (x.WorkStartHourAt <= currentTimeHour && x.WorkFinishHourAt > currentTimeHour) ||
+                                        (x.WorkStartHourAt <= currentTimeHourAtNextDay && x.WorkFinishHourAt > currentTimeHourAtNextDay)
+                                    )
+                                )
                          .ToListAsync();
         }
 
         public async Task<Agent> GetAgentWithCapacity()
         {
-            var currentTimeHour = Helper.GetDefaultDateTime(DateTime.Now.Hour);//TODO fix bug with a next day
+            var currentTimeHour = Helper.GetDefaultDateTime(DateTime.Now.Hour);
+            var currentTimeHourAtNextDay = currentTimeHour.AddDays(1);
 
             var agent = await _dbContext.Agents
                             .Include(x => x.Team)
                             .Include(x => x.ActiveAgentSessions)
                             .Include(x => x.Seniority) //making sure to keep lower seniority agetns busy
-                            .Where(x =>
-                                x.ActiveAgentSessions.Count < x.Seniority.SeniorityMultiplier &&
-                                x.Team.Active &&
-                                x.Team.WorkFinishHourAt > currentTimeHour &&
-                                x.Team.WorkStartHourAt <= currentTimeHour)
+                            .Where(x =>x.ActiveAgentSessions.Count < x.Seniority.SeniorityMultiplier &&
+                                       x.Team.Active &&
+                                       (
+                                           (x.Team.WorkStartHourAt <= currentTimeHour && x.Team.WorkFinishHourAt > currentTimeHour)||
+                                           (x.Team.WorkStartHourAt <= currentTimeHourAtNextDay && x.Team.WorkFinishHourAt > currentTimeHourAtNextDay)
+                                       )
+                                   )
                             .GroupBy(x => x.Seniority.Priority)
                             .OrderBy(x => x.Key)
                             .Select(x=>x.OrderBy(y=>y.ActiveAgentSessions.Count).FirstOrDefault())
